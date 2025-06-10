@@ -1,0 +1,40 @@
+name: App build
+
+on:
+  push:
+    branches: [ "dev", "main" ]
+  pull_request:
+    branches: [ "dev", "main" ]
+
+jobs:
+  build-war:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11' 
+
+      - name: Grant permission to gradlew
+        run: chmod +x gradlew
+        working-directory: backend/backend
+
+      - name: Build WAR
+        run: ./gradlew clean war
+        working-directory: backend/backend
+
+      - name: Rename WAR file to ROOT.war
+        run: mv build/libs/class_schedule.war build/libs/ROOT.war
+        working-directory: backend/backend
+
+      - name: Upload WAR to JFrog Artifactory
+        run: |
+          curl -u "${{ secrets.ARTIFACTORY_USERNAME }}:${{ secrets.ARTIFACTORY_PASSWORD }}" \
+            -T build/libs/ROOT.war \
+            "https://your-org.jfrog.io/artifactory/libs-release-local/com/example/class-schedule/1.0.0/ROOT.war"
+        working-directory: backend/backend
