@@ -21,7 +21,7 @@ jobs:
           java-version: '11' 
 
       - name: Grant permission to gradle
-        run: chmod +x gradle
+        run: chmod +x gradlew
         working-directory: backend/backend
 
       - name: Build WAR
