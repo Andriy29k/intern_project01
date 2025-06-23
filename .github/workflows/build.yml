@@ -67,15 +67,20 @@ jobs:
           tar -xf node-v14.21.3-linux-x64.tar.xz
           echo "$PWD/node-v14.21.3-linux-x64/bin" >> $GITHUB_PATH
 
-      - name: Install frontend dependencies and build archive
+      - name: Install frontend dependencies
         working-directory: frontend/frontend
         run: |
           npm install
       
-      - name: Archive frontend with node_modules
+      - name: Create frontend archive
         working-directory: frontend
         run: |
-          tar -czf frontend.tar.gz frontend/node_modules frontend/src frontend/public frontend/package.json frontend/package-lock.json
+          tar -czf frontend.tar.gz \
+          frontend/node_modules \
+          frontend/src \
+          frontend/public \
+          frontend/package.json \
+          frontend/package-lock.json
 
       - name: Set up GCP credentials
         env:
@@ -86,8 +91,8 @@ jobs:
           source $HOME/google-cloud-sdk/path.bash.inc
           gcloud auth activate-service-account --key-file=$HOME/gcp-creds.json
 
-      - name: Upload frontend archive to GCP Storage Bucket
+      - name: Upload frontend archive to GCS
         env:
           FRONTEND_BUCKET: frontend_artifacts_class_schedule
-        run: |
-          gsutil cp frontend.tar.gz gs://$FRONTEND_BUCKET/frontend.tar.gz
+        run: gsutil cp frontend/frontend.tar.gz gs://$FRONTEND_BUCKET/frontend.tar.gz
+        working-directory: frontend
