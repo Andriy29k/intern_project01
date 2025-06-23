@@ -103,7 +103,7 @@ jobs:
       - name: Upload frontend archive to GCS
         env:
           FRONTEND_BUCKET: frontend_artifacts_class_schedule
-        run: gsutil cp frontend/frontend.tar.gz gs://$FRONTEND_BUCKET/frontend.tar.gz
+        run: gsutil cp frontend.tar.gz gs://$FRONTEND_BUCKET/frontend.tar.gz
         working-directory: frontend
       
 
