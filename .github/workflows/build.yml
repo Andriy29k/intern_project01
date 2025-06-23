@@ -72,9 +72,10 @@ jobs:
         run: |
           npm install
       
-      - name: Create frontend archive
+      - name: Install frontend dependencies and build archive
         working-directory: frontend
         run: |
+          npm ci
           tar -czf frontend.tar.gz \
           frontend/node_modules \
           frontend/src \
@@ -95,4 +96,8 @@ jobs:
         env:
           FRONTEND_BUCKET: frontend_artifacts_class_schedule
         run: gsutil cp frontend/frontend.tar.gz gs://$FRONTEND_BUCKET/frontend.tar.gz
+        working-directory: frontend
+      
+      - name: Debug — check archive exists
+        run: ls -lh frontend.tar.gz
         working-directory: frontend
