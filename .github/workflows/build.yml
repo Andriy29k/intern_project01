@@ -1,95 +1,86 @@
-name: App Build & Upload
+name: App build & Upload to GCS
 
 on:
   push:
-    branches: [ "main", "dev" ]
+    branches: [ "dev", "main" ]
   pull_request:
-    branches: [ "main", "dev" ]
+    branches: [ "dev", "main" ]
 
 jobs:
-  backend-war:
-    name: Build & Push Backend WAR
+  build-war:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 11
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '11' 
 
-      - name: Install Gradle 6.8
-        run: |
-          wget https://services.gradle.org/distributions/gradle-6.8-bin.zip
-          unzip -d /opt/gradle gradle-6.8-bin.zip
-          echo "PATH=/opt/gradle/gradle-6.8/bin:$PATH" >> $GITHUB_ENV
-
-      - name: Build WAR
-        run: |
-          gradle clean war
+      - name: Grant permission to gradle
+        run: chmod +x gradle
         working-directory: backend/backend
 
-      - name: Rename WAR to ROOT.war
+      - name: Build WAR
+        run: ./gradle clean war
+        working-directory: backend/backend
+
+      - name: Rename WAR file to ROOT.war
         run: mv build/libs/class_schedule.war build/libs/ROOT.war
         working-directory: backend/backend
 
       - name: Decode GCP credentials
-        run: |
-          echo "$GCP_CREDENTIALS_BASE64" | base64 -d > $HOME/gcp-creds.json
-        env:
-          GCP_CREDENTIALS_BASE64: ${{ secrets.GCP_CREDENTIALS_BASE64 }}
+        run: echo "${{ secrets.GCP_CREDENTIALS_BASE64 }}" | base64 -d > $HOME/gcp-creds.json
 
-      - name: Authenticate with Artifact Registry
+      - name: Install gcloud CLI
         run: |
-          sudo apt-get update && sudo apt-get install -y google-cloud-cli
-          gcloud auth activate-service-account --key-file=$HOME/gcp-creds.json
-          gcloud auth configure-docker us-maven.pkg.dev --quiet
+          sudo apt-get update
+          sudo apt-get install -y google-cloud-cli
 
-      - name: Push WAR to Artifact Registry
-        run: |
-          docker login -u _json_key -p "$(cat $HOME/gcp-creds.json)" https://us-maven.pkg.dev
-          curl -X PUT -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-            -T build/libs/ROOT.war \
-            "https://us-maven.pkg.dev/swift-approach-462608-v4/class-schedule/com/example/class-schedule/1.0.0/ROOT.war"
-        working-directory: backend/backend
+      - name: Authenticate with GCP
+        run: gcloud auth activate-service-account --key-file=$HOME/gcp-creds.json
 
-  frontend-archive:
-    name: Archive Frontend & Upload to GCS
+      - name: Upload WAR to Backend GCS bucket
+        run: gsutil cp backend/backend/build/libs/ROOT.war gs://backend_artifacts_class_schedule/ROOT.war
+
+  build-frontend:
     runs-on: ubuntu-latest
+    needs: build-war
 
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Node.js 14.21.3
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: '14.21.3'
+          node-version: 14.21.3
 
-      - name: Install dependencies
-        run: npm install
-        working-directory: frontend/frontend
-
-      - name: Create archive with node_modules
+      - name: Install dependencies and build frontend
         run: |
-          cd frontend
-          tar -czf frontend.tar.gz frontend
-          mv frontend.tar.gz $GITHUB_WORKSPACE/
+          cd frontend/frontend
+          npm ci
+          npm run build
+        shell: bash
+
+      - name: Archive frontend build with node_modules
+        run: |
+          cd frontend/frontend
+          tar czf ../../frontend.tar.gz ./build ./node_modules
 
       - name: Decode GCP credentials
-        run: |
-          echo "$GCP_CREDENTIALS_BASE64" | base64 -d > $HOME/gcp-creds.json
-        env:
-          GCP_CREDENTIALS_BASE64: ${{ secrets.GCP_CREDENTIALS_BASE64 }}
+        run: echo "${{ secrets.GCP_CREDENTIALS_BASE64 }}" | base64 -d > $HOME/gcp-creds.json
 
-      - name: Install gcloud CLI & Auth
+      - name: Install gcloud CLI
         run: |
-          sudo apt-get update && sudo apt-get install -y google-cloud-cli
-          gcloud auth activate-service-account --key-file=$HOME/gcp-creds.json
+          sudo apt-get update
+          sudo apt-get install -y google-cloud-cli
 
-      - name: Upload archive to GCS bucket
-        run: |
-          gsutil cp frontend.tar.gz gs://class-schedule-frontend-artifacts/frontend.tar.gz
+      - name: Authenticate with GCP
+        run: gcloud auth activate-service-account --key-file=$HOME/gcp-creds.json
+
+      - name: Upload frontend archive to Frontend GCS bucket
+        run: gsutil cp frontend.tar.gz gs://frontend_artifacts_class_schedule/frontend.tar.gz
