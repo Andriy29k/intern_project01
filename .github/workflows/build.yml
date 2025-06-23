@@ -47,13 +47,11 @@ jobs:
           curl -sSL https://sdk.cloud.google.com | bash > /dev/null
           source $HOME/google-cloud-sdk/path.bash.inc
           gcloud auth activate-service-account --key-file=$HOME/gcp-creds.json
-          gcloud auth configure-docker us-maven.pkg.dev --quiet
 
-      - name: Upload WAR to GCP Artifact Registry
+      - name: Upload WAR to GCP Bucket
+        working-directory: backend/backend
         run: |
-          curl -u _json_key:"$(cat $HOME/gcp-creds.json)" \
-            -T backend/backend/build/libs/ROOT.war \
-            "https://us-maven.pkg.dev/$GCP_PROJECT_ID/class-schedule/com/example/class-schedule/1.0.0/ROOT.war"
+          gsutil cp build/libs/ROOT.war gs://$BACKEND_BUCKET/ROOT.war
 
   build-frontend:
     runs-on: ubuntu-latest
