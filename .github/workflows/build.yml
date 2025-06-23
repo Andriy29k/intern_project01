@@ -82,6 +82,10 @@ jobs:
           frontend/public \
           frontend/package.json \
           frontend/package-lock.json
+      
+      - name: Debug — check archive exists
+        run: ls -lh frontend.tar.gz
+        working-directory: frontend
 
       - name: Set up GCP credentials
         env:
@@ -98,6 +102,4 @@ jobs:
         run: gsutil cp frontend/frontend.tar.gz gs://$FRONTEND_BUCKET/frontend.tar.gz
         working-directory: frontend
       
-      - name: Debug — check archive exists
-        run: ls -lh frontend.tar.gz
-        working-directory: frontend
+
