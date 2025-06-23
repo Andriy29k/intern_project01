@@ -73,7 +73,7 @@ jobs:
           npm install
       
       - name: Install frontend dependencies and build archive
-        working-directory: frontend
+        working-directory: frontend/frontend
         run: |
           npm ci
           tar -czf frontend.tar.gz \
