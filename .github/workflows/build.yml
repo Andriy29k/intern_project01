@@ -71,11 +71,15 @@ jobs:
         working-directory: frontend/frontend
         run: |
           npm install
-      
-      - name: Install frontend dependencies and build archive
+
+      - name: Install frontend dependencies
         working-directory: frontend/frontend
         run: |
           npm ci
+      
+      - name: Install frontend dependencies and build archive
+        working-directory: frontend
+        run: |
           tar -czf frontend.tar.gz \
           frontend/node_modules \
           frontend/src \
