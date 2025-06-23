@@ -22,7 +22,7 @@ jobs:
 
       - name: Install Gradle 6.8 manually
         run: |
-          wget https://gradle.org/next-steps/?version=6.8&format=bin
+          wget wget https://services.gradle.org/distributions/gradle-6.8-bin.zip
           unzip gradle-6.8-bin.zip -d /opt/gradle
           echo "export PATH=/opt/gradle/gradle-6.8/bin:\$PATH" >> $GITHUB_ENV
 
