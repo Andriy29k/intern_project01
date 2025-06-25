@@ -1,0 +1,10 @@
+{% for host in internal_hosts %}
+Host {{ host.name }}
+    HostName {{ host.ip }}
+    User andrii
+    IdentityFile {{ internal_key_path }}
+    IdentitiesOnly yes
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
+
+{% endfor %}

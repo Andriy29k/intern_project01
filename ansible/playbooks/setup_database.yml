@@ -1,0 +1,161 @@
+---
+- name: Setup and restore PostgreSQL database
+  hosts: database
+  become: true
+  vars:
+    db_name: class_schedule
+    db_user: app_user
+    db_password: "strongpassword"
+    allowed_cidr: "10.0.2.0/24"
+    postgresql_version: "15"
+
+    gcs_dump_path: "gs://class-schedule-dump/dump.dump"
+    local_dump_path: "/tmp/dump.dump"
+
+    gcp_service_account_key_local_path: "/home/andriy29k/code/internship/milestone2/project/ansible/gcp-creds.json"
+    gcp_service_account_key_remote_path: "/home/andrii/gcp-creds.json"
+
+  tasks:
+    - name: Copy GCP service account key to database instance
+      ansible.builtin.copy:
+        src: "{{ gcp_service_account_key_local_path }}"
+        dest: "{{ gcp_service_account_key_remote_path }}"
+        owner: andrii
+        group: andrii
+        mode: '0600'
+
+    - name: Install PostgreSQL
+      ansible.builtin.apt:
+        name: postgresql
+        state: present
+        update_cache: true
+
+    - name: Ensure PostgreSQL is running
+      ansible.builtin.service:
+        name: postgresql
+        state: started
+        enabled: true
+
+    - name: Check if user exists
+      become: true
+      shell: |
+        sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='{{ db_user }}'"
+      register: user_exists
+      changed_when: false
+
+    - name: Create database user if not exists
+      become: true
+      shell: |
+        sudo -u postgres psql -c "CREATE USER {{ db_user }} WITH PASSWORD '{{ db_password }}';"
+      when: user_exists.stdout != "1"
+      args:
+        executable: /bin/bash
+
+    - name: Check if database exists
+      become: true
+      shell: sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='{{ db_name }}'"
+      register: db_exists
+      changed_when: false
+
+    - name: Check if en_US.UTF-8 locale exists
+      shell: locale -a | grep -q '^en_US\.UTF-8$'
+      register: locale_check
+      ignore_errors: true
+      changed_when: false
+
+    - name: Create database with full locale settings if en_US.UTF-8 exists
+      become: true
+      shell: |
+        sudo -u postgres psql -c "CREATE DATABASE {{ db_name }} OWNER {{ db_user }} ENCODING 'UTF8' LC_COLLATE 'en_US.UTF-8' LC_CTYPE 'en_US.UTF-8';"
+      when:
+        - db_exists.stdout != "1"
+        - locale_check.rc == 0
+      args:
+        executable: /bin/bash
+
+    - name: Create database without locale settings if en_US.UTF-8 does not exist
+      become: true
+      shell: |
+        sudo -u postgres psql -c "CREATE DATABASE {{ db_name }} OWNER {{ db_user }};"
+      when:
+        - db_exists.stdout != "1"
+        - locale_check.rc != 0
+      args:
+        executable: /bin/bash
+
+    - name: Allow remote connections to PostgreSQL
+      ansible.builtin.lineinfile:
+        path: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
+        line: "host    all             all             {{ allowed_cidr }}            md5"
+        insertafter: "^#.*IPv4.*"
+      notify: Restart PostgreSQL
+
+    - name: Set listen_addresses to '*'
+      ansible.builtin.lineinfile:
+        path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+        regexp: "^#?listen_addresses =.*"
+        line: "listen_addresses = '*'"
+      notify: Restart PostgreSQL
+
+    - name: Install Google Cloud SDK prerequisites
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - gnupg
+          - curl
+        state: present
+        update_cache: true
+
+    - name: Add GCP apt key
+      ansible.builtin.apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: Add GCP apt repo
+      ansible.builtin.apt_repository:
+        repo: "deb https://packages.cloud.google.com/apt cloud-sdk main"
+        state: present
+        filename: google-cloud-sdk
+
+    - name: Install google-cloud-sdk
+      ansible.builtin.apt:
+        name: google-cloud-sdk
+        state: present
+        update_cache: true
+
+    - name: Download DB dump from GCS
+      become_user: andrii
+      environment:
+        GOOGLE_APPLICATION_CREDENTIALS: "{{ gcp_service_account_key_remote_path }}"
+      ansible.builtin.shell: |
+        gsutil cp {{ gcs_dump_path }} {{ local_dump_path }}
+      args:
+        executable: /bin/bash
+
+    - name: Restore PostgreSQL database from plain SQL dump
+      become_user: postgres
+      ansible.builtin.shell: |
+        psql {{ db_name }} < {{ local_dump_path }}
+      args:
+        executable: /bin/bash
+
+    - name: Remove local dump file
+      ansible.builtin.file:
+        path: "{{ local_dump_path }}"
+        state: absent
+
+    - name: Remove dump from GCS
+      become_user: andrii
+      environment:
+        GOOGLE_APPLICATION_CREDENTIALS: "{{ gcp_service_account_key_remote_path }}"
+      ansible.builtin.shell: |
+        gsutil rm {{ gcs_dump_path }}
+      args:
+        executable: /bin/bash
+
+  handlers:
+    - name: Restart PostgreSQL
+      ansible.builtin.service:
+        name: postgresql
+        state: restarted

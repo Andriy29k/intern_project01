@@ -1,0 +1,18 @@
+Host bastion
+    HostName {{ bastion_ip }}
+    User andrii
+    IdentityFile {{ bastion_key_path }}
+    IdentitiesOnly yes
+    ForwardAgent yes
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
+
+{% for host in internal_hosts %}
+Host {{ host.name }}
+    HostName {{ host.ip }}
+    User andrii
+    ProxyJump bastion
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
+
+{% endfor %}
