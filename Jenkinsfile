@@ -14,7 +14,7 @@ pipeline {
 
                 dir('branch-dev') {
                     git branch: 'dev',
-                        url: 'github-url',
+                        url: "${env.GITHUB_URL}",
                         credentialsId: 'github-credentials'
                 }
             }
