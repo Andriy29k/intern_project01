@@ -19,5 +19,25 @@ pipeline {
                 }
             }
         }
+        stage('Build Backend') {
+            steps {
+                tools {
+                    gradle 'gradle-6.8'
+                    java 'jdk11'
+                }
+                dir('backend/backend') {
+                    sh 'gradle clean war'
+                }
+            }
+        }
+        stage('Build Frontend') {
+            steps {
+                dir('branch-dev') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+            }
+        }
     }
+
 }
