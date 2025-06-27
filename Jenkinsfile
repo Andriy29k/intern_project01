@@ -13,26 +13,33 @@ pipeline {
     }
 
     stages {
-        stage('Checkout branches') {
+        stage('Checkout branch') {
             steps {
-                git branch: 'main',
+                git branch: 'dev',
                     url: "${env.GITHUB_URL}",
                     credentialsId: 'github-credentials'
-
-                dir('branch-dev') {
-                    git branch: 'dev',
-                        url: "${env.GITHUB_URL}",
-                        credentialsId: 'github-credentials'
-                }
             }
         }
         stage('Build Backend') {
             steps {
-                dir('backend/backend') {
-                    sh 'gradle clean war'
+                dir('backend') {
+                    dir('backend'){
+                        sh 'gradle clean -x test'
+                    }
                 }
             }
         }
+
+        stage('Test Backend') {
+            steps {
+                dir('backend') {
+                    dir('backend') {
+                        sh 'gradle test'
+                    }
+                }
+            }
+        }
+
         stage('Build Frontend') {
             steps {
                 dir('branch-dev') {
