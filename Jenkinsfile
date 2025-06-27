@@ -6,7 +6,7 @@ pipeline {
     }
 
     tools {
-        gradle 'gradle-6.8'
+        //gradle 'gradle-6.8'
         jdk 'jdk11'
     }
 
