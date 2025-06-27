@@ -5,6 +5,11 @@ pipeline {
         GITHUB_URL = 'https://github.com/Andriy29k/intern_project01.git'
     }
 
+    tools {
+        gradle 'gradle-6.8'
+        java 'jdk11'
+    }
+
     stages {
         stage('Checkout branches') {
             steps {
@@ -21,10 +26,6 @@ pipeline {
         }
         stage('Build Backend') {
             steps {
-                tools {
-                    gradle 'gradle-6.8'
-                    java 'jdk11'
-                }
                 dir('backend/backend') {
                     sh 'gradle clean war'
                 }
