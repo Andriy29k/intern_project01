@@ -30,7 +30,7 @@ pipeline {
         stage('Build Backend') {
             steps {
                 dir('backend/backend') {
-                    sh 'gradle clean war'
+                    sh 'gradlew clean war'
                 }
             }
         }
