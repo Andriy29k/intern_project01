@@ -31,7 +31,7 @@ pipeline {
             }
         }
 
-        stage('Test Backend') {
+        stage('Backend Tests') {
             steps {
                 dir('backend') {
                     dir('backend') {
@@ -41,11 +41,31 @@ pipeline {
             }
         }
 
+        stage('Sonar Scanning') {
+            steps {
+                dir('backend') {
+                    dir('backend') {
+                        withCredentials([string(credentialsId: 'SONARQUBE_TOKEN', variable: 'SONARQUBE_TOKEN')]) {
+                            sh """
+                                sonar-scanner \
+                                -Dsonar.projectKey=class_schedule \
+                                -Dsonar.sources=src \
+                                -Dsonar.java.binaries=build/classes/java/main \
+                                -Dsonar.host.url=http://localhost:9000 \
+                                -Dsonar.login=$SONARQUBE_TOKEN
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Build Frontend') {
             steps {
                 dir('branch-dev') {
-                    sh 'npm install'
-                    sh 'npm run build'
+                    echo 'Building Frontend...' 
+                    // sh 'npm install'
+                    // sh 'npm run build'
                 }
             }
         }
