@@ -41,24 +41,29 @@ pipeline {
             }
         }
 
-        stage('Sonar Scanning') {
+       stage('Sonar Scanning') {
             steps {
                 dir('backend') {
                     dir('backend') {
-                        withCredentials([string(credentialsId: 'SONARQUBE_TOKEN', variable: 'SONARQUBE_TOKEN')]) {
-                            sh """
-                                sonar-scanner \
-                                -Dsonar.projectKey=class_schedule \
-                                -Dsonar.sources=src \
-                                -Dsonar.java.binaries=build/classes/java/main \
-                                -Dsonar.host.url=http://localhost:9000 \
-                                -Dsonar.login=$SONARQUBE_TOKEN
-                            """
-                        }
+                        script {
+                            def scannerHome = tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                    
+                            withCredentials([string(credentialsId: 'SONARQUBE_TOKEN', variable: 'SONARQUBE_TOKEN')]) {
+                                sh """
+                                    ${scannerHome}/bin/sonar-scanner \\
+                                    -Dsonar.projectKey=class_schedule \\
+                                    -Dsonar.sources=src \\
+                                    -Dsonar.java.binaries=build/classes/java/main \\
+                                    -Dsonar.host.url=http://localhost:9000 \\
+                            -Dsonar.login=$SONARQUBE_TOKEN
+                        """
                     }
                 }
             }
         }
+    }
+}
+
 
         stage('Build Frontend') {
             steps {
