@@ -62,14 +62,12 @@ pipeline {
 
         stage('Build Frontend') {
             steps {
-                dir('branch-dev') {
+                dir('frontend') {
                     dir('frontend') {
-                        dir('frontend') {
-                            sh 'npm install'
-                            sh 'npm run build'
-                            sh 'tar -czf frontend-artifact.tar.gz build/' 
-                            archiveArtifacts artifacts: 'frontend-artifact.tar.gz', fingerprint: true
-                        }
+                        sh 'npm install'
+                        sh 'npm run build'
+                        sh 'tar -czf frontend-artifact.tar.gz build/' 
+                        archiveArtifacts artifacts: 'frontend-artifact.tar.gz', fingerprint: true
                     }
                 }
             }
