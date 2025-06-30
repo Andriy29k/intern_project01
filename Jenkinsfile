@@ -12,7 +12,7 @@ pipeline {
         gradle 'gradle-6.8'
         jdk 'jdk-11'
         // sonar 'SonarQube'
-        nodejs 'nodejs-14'
+        nodejs 'nodejs-18'
     }
 
     stages {
@@ -68,6 +68,16 @@ pipeline {
                         sh 'npm run build'
                         sh 'tar -czf frontend-artifact.tar.gz build/' 
                         archiveArtifacts artifacts: 'frontend-artifact.tar.gz', fingerprint: true
+                    }
+                }
+            }
+        }
+
+        stage('Frontend Tests') {
+            steps {
+                dir('frontend') {
+                    dir('frontend') {
+                        sh 'npm test -- --watchAll=false'
                     }
                 }
             }
