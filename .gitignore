@@ -5,3 +5,4 @@
 *.tfstate.*
 *.tfvars
 *.terraform.lock.hcl
+*class-schedule-461819-d68d05cfb089.json
