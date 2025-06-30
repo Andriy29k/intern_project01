@@ -58,9 +58,6 @@ pipeline {
                 }
             }
         }
-    }
-}
-
 
         stage('Build Frontend') {
             steps {
@@ -72,5 +69,4 @@ pipeline {
             }
         }
     }
-
 }
