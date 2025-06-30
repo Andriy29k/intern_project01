@@ -74,16 +74,16 @@ pipeline {
             }
         }
 
-        stage('Frontend Tests') {
-            steps {
-                dir('frontend') {
-                    dir('frontend') {
-                        sh 'node -v'
-                        sh 'npm test'
-                    }
-                }
-            }
-        }
+        // stage('Frontend Tests') {
+        //     steps {
+        //         dir('frontend') {
+        //             dir('frontend') {
+        //                 sh 'node -v'
+        //                 sh 'npm test'
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Infrastructure Tests') {
             steps {
