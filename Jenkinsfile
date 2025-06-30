@@ -11,7 +11,7 @@ pipeline {
     tools {
         gradle 'gradle-6.8'
         jdk 'jdk-11'
-        sonar 'SonarQube'
+        // sonar 'SonarQube'
     }
 
     stages {
