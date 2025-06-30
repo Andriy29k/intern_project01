@@ -1,11 +1,10 @@
 pipeline {
     agent any
-    stages {
-
-        tools {
+    tools {
             terraform 'terraform-50623'
         }
 
+    stages {
         stage('Deploy Infrastructure') {
             dir('terraform') {
                 sh 'terraform apply -auto-approve'
