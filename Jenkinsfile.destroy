@@ -1,0 +1,18 @@
+pipeline {
+    agent any
+
+    tools {
+        terraform 'terraform-50623'
+    }
+
+    stages {
+        stage('Destroy Infrastructure') {
+            steps {
+                dir("terraform") {
+                    sh 'terraform init'
+                    sh 'terraform destroy -auto-approve'
+                }
+            }
+        }
+    }
+}

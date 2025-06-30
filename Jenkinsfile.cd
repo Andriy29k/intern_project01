@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+    stages {
+
+        tools {
+            terraform 'terraform-50623'
+        }
+
+        stage('Deploy Infrastructure') {
+            dir('terraform') {
+                sh 'terraform apply -auto-approve'
+            }
+        }
+
+        // stage('Deploy Application') {
+        //     steps {
+        //         dir('ansible') {
+        //             sh 'ansible-playbook -i inventory/production deploy.yml'
+        //             sh 'ansible-playbook -i inventory/production post_deploy.yml'
+        //         }
+        //     }
+        // }
+    }
+    
+     
+}
