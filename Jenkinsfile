@@ -87,15 +87,14 @@ pipeline {
 
         stage('Infrastructure Tests') {
             steps {
-                dir('infrastructure') {
-                    dir('infrastructure') {
-                        sh 'terraform init'
-                        sh 'terraform validate'
-                        sh 'terraform plan'
-                    }
+                dir('terraform') {
+                    sh 'terraform init'
+                    sh 'terraform validate'
+                    sh 'terraform plan'
                 }
             }
         }
+        
 
         // stage('Infrastructure Deployment') {
         //     steps {
