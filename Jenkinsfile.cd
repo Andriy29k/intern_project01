@@ -4,12 +4,14 @@ pipeline {
             terraform 'terraform-50623'
         }
 
-    steps {
-        stage('Deploy Infrastructure') {
+    stage('Deploy Infrastructure') {
+        steps {
             dir('terraform') {
                 sh 'terraform apply -auto-approve'
             }
         }
+    }
+
 
         // stage('Deploy Application') {
         //     steps {
@@ -19,7 +21,4 @@ pipeline {
         //         }
         //     }
         // }
-    }
-    
-     
 }
