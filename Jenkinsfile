@@ -12,6 +12,7 @@ pipeline {
         gradle 'gradle-6.8'
         jdk 'jdk-11'
         // sonar 'SonarQube'
+        nodejs 'nodejs-14'
     }
 
     stages {
@@ -62,9 +63,14 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 dir('branch-dev') {
-                    echo 'Building Frontend...' 
-                    // sh 'npm install'
-                    // sh 'npm run build'
+                    dir('frontend') {
+                        dir('frontend') {
+                            sh 'npm install'
+                            sh 'npm run build'
+                            sh 'tar -czf frontend-artifact.tar.gz build/' 
+                            archiveArtifacts artifacts: 'frontend-artifact.tar.gz', fingerprint: true
+                        }
+                    }
                 }
             }
         }
