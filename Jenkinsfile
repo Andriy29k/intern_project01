@@ -79,7 +79,7 @@ pipeline {
                 dir('frontend') {
                     dir('frontend') {
                         sh 'node -v'
-                        sh 'npm test --watchAll=false'
+                        sh 'npm test'
                     }
                 }
             }
