@@ -13,7 +13,6 @@ pipeline {
         jdk 'jdk-11'
         nodejs 'nodejs-18'
         terraform 'terraform-50623'
-        docker 'docker-latest'
     }
 
     stages {
