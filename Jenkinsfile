@@ -13,6 +13,7 @@ pipeline {
         jdk 'jdk-11'
         // sonar 'SonarQube'
         nodejs 'nodejs-18'
+        terraform 'terraform-50623'
     }
 
     stages {
@@ -82,5 +83,47 @@ pipeline {
                 }
             }
         }
+
+        stage('Infrastructure Tests') {
+            steps {
+                dir('infrastructure') {
+                    dir('infrastructure') {
+                        sh 'terraform init'
+                        sh 'terraform validate'
+                        sh 'terraform plan'
+                    }
+                }
+            }
+        }
+
+        // stage('Infrastructure Deployment') {
+        //     steps {
+        //         dir('infrastructure') {
+        //             dir('infrastructure') {
+        //                 sh 'terraform apply -auto-approve'
+        //             }
+        //         }
+        //     }
+        // }
+
+        // stage('Backend Docker build') {
+        //     steps {
+        //         dir('backend') {
+        //             sh 'docker build -t class_schedule_backend .'
+        //             sh 'docker save class_schedule_backend | gzip > backend-docker-image.tar.gz'
+        //             archiveArtifacts artifacts: 'backend-docker-image.tar.gz', fingerprint: true
+        //         }
+        //     }
+        // }
+
+        // stage('Frontend Docker build') {
+        //     steps {
+        //         dir('frontend') {
+        //             sh 'docker build -t class_schedule_backend .'
+        //             sh 'docker save class_schedule_backend | gzip > backend-docker-image.tar.gz'
+        //             archiveArtifacts artifacts: 'backend-docker-image.tar.gz', fingerprint: true
+        //         }
+        //     }
+        // }
     }
 }
