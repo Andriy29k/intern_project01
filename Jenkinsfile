@@ -3,14 +3,14 @@ pipeline {
 
     environment {
         //JAVA_HOME = '/path/to/java'      
-        GRADLE_HOME = '/opt/gradle/latest'
-        PATH = "${GRADLE_HOME}/bin:${env.PATH}"
+        // GRADLE_HOME = '/opt/gradle/latest'
+        // PATH = "${GRADLE_HOME}/bin:${env.PATH}"
         GITHUB_URL="https://github.com/Andriy29k/intern_project01.git"
     }
 
     tools {
-        //gradle 'gradle-6.8'
-        jdk 'jdk11'
+        gradle 'gradle-6.8'
+        jdk 'jdk-11'
     }
 
     stages {
