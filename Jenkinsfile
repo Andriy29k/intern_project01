@@ -2,18 +2,18 @@ pipeline {
     agent any
 
     environment {
-        //JAVA_HOME = '/path/to/java'      
-        // GRADLE_HOME = '/opt/gradle/latest'
-        // PATH = "${GRADLE_HOME}/bin:${env.PATH}"
         GITHUB_URL="https://github.com/Andriy29k/intern_project01.git"
+        BACKEND_IMAGE_NAME = 'class_schedule_backend'
+        FRONTEND_IMAGE_NAME = 'class_schedule_frontend'
+        IMAGE_TAG = 'latest'
     }
 
     tools {
         gradle 'gradle-6.8'
         jdk 'jdk-11'
-        // sonar 'SonarQube'
         nodejs 'nodejs-18'
         terraform 'terraform-50623'
+        docker 'docker-latest'
     }
 
     stages {
@@ -74,26 +74,15 @@ pipeline {
             }
         }
 
-        // stage('Frontend Tests') {
+        // stage('Infrastructure Tests') {
         //     steps {
-        //         dir('frontend') {
-        //             dir('frontend') {
-        //                 sh 'node -v'
-        //                 sh 'npm test'
-        //             }
+        //         dir('terraform') {
+        //             sh 'terraform init'
+        //             sh 'terraform validate'
+        //             sh 'terraform plan'
         //         }
         //     }
         // }
-
-        stage('Infrastructure Tests') {
-            steps {
-                dir('terraform') {
-                    sh 'terraform init'
-                    sh 'terraform validate'
-                    sh 'terraform plan'
-                }
-            }
-        }
         
 
         // stage('Infrastructure Deployment') {
@@ -106,15 +95,19 @@ pipeline {
         //     }
         // }
 
-        // stage('Backend Docker build') {
-        //     steps {
-        //         dir('backend') {
-        //             sh 'docker build -t class_schedule_backend .'
-        //             sh 'docker save class_schedule_backend | gzip > backend-docker-image.tar.gz'
-        //             archiveArtifacts artifacts: 'backend-docker-image.tar.gz', fingerprint: true
-        //         }
-        //     }
-        // }
+        stage('Docker images build') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', 
+                                                 usernameVariable: 'DOCKERHUB_USERNAME', 
+                                                 passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                    sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                }
+                sh 'docker build -t ${env.BACKEND_IMAGE_NAME}:${env.IMAGE_TAG} ./backend'
+                sh 'docker build -t ${env.FRONTEND_IMAGE_NAME}:${env.IMAGE_TAG} ./frontend'
+                sh 'docker push ${env.BACKEND_IMAGE_NAME}:${env.IMAGE_TAG}'
+                sh 'docker push ${env.FRONTEND_IMAGE_NAME}:${env.IMAGE_TAG}'
+            }
+        }
 
         // stage('Frontend Docker build') {
         //     steps {
