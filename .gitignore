@@ -1,6 +1,6 @@
 *.war
 
-*./.terraform
+*./terraform/.terraform
 *.tfstate
 *.tfstate.*
 *.tfvars
