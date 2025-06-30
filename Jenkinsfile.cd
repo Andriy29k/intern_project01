@@ -4,7 +4,7 @@ pipeline {
             terraform 'terraform-50623'
         }
 
-    stages {
+    steps {
         stage('Deploy Infrastructure') {
             dir('terraform') {
                 sh 'terraform apply -auto-approve'
