@@ -96,15 +96,17 @@ pipeline {
 
         stage('Docker images build') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'DOCKERHUB_CREDENTIALS', 
-                                                 usernameVariable: 'DOCKERHUB_USERNAME', 
-                                                 passwordVariable: 'DOCKERHUB_PASSWORD')]) {
-                    sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                withCredentials([usernamePassword(
+                        credentialsId: 'DOCKERHUB_CREDENTIALS', 
+                        usernameVariable: 'DOCKERHUB_USERNAME', 
+                        passwordVariable: 'DOCKERHUB_PASSWORD'
+                )]) {
+                    sh 'echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin'
                 }
-                sh 'docker build -t ${env.BACKEND_IMAGE_NAME}:${env.IMAGE_TAG} ./backend'
-                sh 'docker build -t ${env.FRONTEND_IMAGE_NAME}:${env.IMAGE_TAG} ./frontend'
-                sh 'docker push ${env.BACKEND_IMAGE_NAME}:${env.IMAGE_TAG}'
-                sh 'docker push ${env.FRONTEND_IMAGE_NAME}:${env.IMAGE_TAG}'
+                sh 'docker build -t $DOCKERHUB_USERNAME/${env.BACKEND_IMAGE_NAME}:${env.IMAGE_TAG} ./backend'
+                sh 'docker build -t $DOCKERHUB_USERNAME/${env.FRONTEND_IMAGE_NAME}:${env.IMAGE_TAG} ./frontend'
+                sh 'docker push $DOCKERHUB_USERNAME/${env.BACKEND_IMAGE_NAME}:${env.IMAGE_TAG}'
+                sh 'docker push $DOCKERHUB_USERNAME/${env.FRONTEND_IMAGE_NAME}:${env.IMAGE_TAG}'
             }
         }
 

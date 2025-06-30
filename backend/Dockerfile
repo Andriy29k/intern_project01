@@ -6,7 +6,7 @@ ARG DATABASE
 ARG USERNAME
 ARG USERPASSWORD
 
-RUN sed -i "s|hibernate.connection.url=.*|hibernate.connection.url=jdbc:postgresql://postgres:5432/${DATABASE}|" /backend/src/main/resources/hibernate.properties && \
+RUN sed -i "s|hibernate.connection.url=.*|hibernate.connection.url=${DATABASE_URL}/${DATABASE}|" /backend/src/main/resources/hibernate.properties && \
     sed -i "s|hibernate.connection.username=.*|hibernate.connection.username=${USERNAME}|" /backend/src/main/resources/hibernate.properties && \
     sed -i "s|hibernate.connection.password=.*|hibernate.connection.password=${USERPASSWORD}|" /backend/src/main/resources/hibernate.properties && \
     cd /backend && gradle build --no-daemon --console=plain
