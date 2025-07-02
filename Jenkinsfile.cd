@@ -7,7 +7,7 @@ pipeline {
         stage('Deploy Infrastructure') {
             steps {
                 dir('terraform') {
-                    withCredentials([file(credentialsId: 'TERRAFORM-VARS', variable: 'TFVARS_FILE')]) {
+                    withCredentials([file(credentialsId: 'TERRAFORM-TFVARS', variable: 'TFVARS_FILE')]) {
                         sh 'terraform init'
                         sh 'terraform validate'
                         sh 'terraform plan -var-file=$TFVARS_FILE'
