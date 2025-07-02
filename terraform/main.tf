@@ -81,7 +81,7 @@ module "database" {
   private_subnet_name   = module.network.private_subnet_name
 }
 
-module "dump_bucket" {
+module "storage" {
   source        = "./modules/storage"
   project_id    = var.project_id
   bucket_name   = var.bucket_name
