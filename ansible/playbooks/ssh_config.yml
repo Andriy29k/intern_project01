@@ -1,0 +1,42 @@
+---
+- name: Generate SSH config for bastion + hosts
+  hosts: localhost
+  gather_facts: false
+  vars:
+    ssh_config_path: "{{ lookup('env','HOME') }}/.ssh/config"
+    bastion_host: "{{ hostvars['bastion']['ansible_host'] }}"
+    bastion_user: "{{ hostvars['bastion']['ansible_user'] }}"
+    bastion_key: "{{ hostvars['bastion']['ansible_ssh_private_key_file'] }}"
+    over_bastion_key: "{{ hostvars['frontend']['ansible_ssh_private_key_file'] }}"
+
+  tasks:
+    - name: Create backup of existing ssh config if exists
+      copy:
+        src: "{{ ssh_config_path }}"
+        dest: "{{ ssh_config_path }}.backup"
+        remote_src: yes
+        backup: yes
+      ignore_errors: yes
+
+    - name: Write SSH config file
+      copy:
+        dest: "{{ ssh_config_path }}"
+        content: |
+          Host bastion
+              HostName {{ bastion_host }}
+              User {{ bastion_user }}
+              IdentityFile {{ bastion_key }}
+              StrictHostKeyChecking no
+              UserKnownHostsFile=/dev/null
+
+          {% for host in groups['all'] if host != 'localhost' and host != 'bastion' %}
+          Host {{ host }}
+              HostName {{ hostvars[host]['ansible_host'] }}
+              User {{ hostvars[host]['ansible_user'] }}
+              IdentityFile {{ over_bastion_key }}
+              ProxyJump {{ bastion_user }}@{{ bastion_host }}
+              StrictHostKeyChecking no
+              UserKnownHostsFile=/dev/null
+
+          {% endfor %}
+        mode: '0600'
