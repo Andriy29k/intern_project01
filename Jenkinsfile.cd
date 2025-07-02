@@ -7,10 +7,12 @@ pipeline {
         stage('Deploy Infrastructure') {
             steps {
                 dir('terraform') {
-                    sh 'terraform init'
-                    sh 'terraform validate'
-                    sh 'terraform plan'
-                    sh 'terraform apply --auto-approve'
+                    withCredentials([file(credentialsId: 'TERRAFORM-VARS', variable: 'TFVARS_FILE')]) {
+                        sh 'terraform init'
+                        sh 'terraform validate'
+                        sh 'terraform plan -var-file=$TFVARS_FILE'
+                        sh 'terraform apply -auto-approve -var-file=$TFVARS_FILE'
+                    }
                 }
             }   
         }
