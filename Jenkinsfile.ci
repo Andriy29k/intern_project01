@@ -65,22 +65,12 @@ pipeline {
             }
         }
 
-        // stage('Infrastructure Tests') {
-        //     steps {
-        //         dir('terraform') {
-        //             sh 'terraform init'
-        //             sh 'terraform validate'
-        //             sh 'terraform plan'
-        //         }
-        //     }
-        // }
-
         stage('CD Start') {
             when {
                 branch 'dev'
             }
             steps {
-                build job: 'class_schedule_cd'
+                build job: 'class-schedule-cd'
             }
         }
 
@@ -93,16 +83,6 @@ pipeline {
         //                 tflint --init
         //                 tflint
         //            '''
-        //         }
-        //     }
-        // }
-
-        // stage('Infrastructure Deployment') {
-        //     steps {
-        //         dir('infrastructure') {
-        //             dir('infrastructure') {
-        //                 sh 'terraform apply -auto-approve'
-        //             }
         //         }
         //     }
         // }
