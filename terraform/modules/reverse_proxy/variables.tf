@@ -12,13 +12,12 @@ variable "image" {
   default = "debian-cloud/debian-12"
 }
 
-variable "disk_size" {
-  default = 10
+variable "size" {
+  type = number
 }
 
-variable "ssh_path" {
+variable "ssh_path_over_bastion" {
   type    = string
-  default = "~/.ssh/gcp_id_rsa.pub"
 }
 
 variable "ssh_user" {

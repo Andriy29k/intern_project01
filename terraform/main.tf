@@ -25,49 +25,66 @@ module "network" {
   private_subnet_cidr = var.private_subnet_cidr
 }
 
-# Compute instances: bastion, frontend, backend, reverse-proxy
-module "compute" {
-  source              = "./modules/compute"
+module "bastion" {
+  source              = "./modules/bastion"
   project_id          = var.project_id
   region              = var.region
   zone                = var.zone
   network_name        = module.network.network_name
   public_subnet_name  = module.network.public_subnet_name
   private_subnet_name = module.network.private_subnet_name
+  machine_type        = var.machine_type
+  image               = var.image
+  size                = var.size
+  ssh_path_to_bastion = var.ssh_path_to_bastion
+  ssh_user            = var.ssh_user
+}
 
-  machine_type = var.machine_type
-  image        = var.image
-  size         = var.size
-  ssh_path     = var.ssh_path
-  ssh_user     = var.ssh_user
+# Compute instances: frontend, backend
+module "compute" {
+  source                = "./modules/compute"
+  project_id            = var.project_id
+  region                = var.region
+  zone                  = var.zone
+  network_name          = module.network.network_name
+  public_subnet_name    = module.network.public_subnet_name
+  private_subnet_name   = module.network.private_subnet_name
+  machine_type          = var.machine_type
+  image                 = var.image
+  size                  = var.size
+  ssh_path_over_bastion = var.ssh_path_over_bastion
+  ssh_user              = var.ssh_user
 }
 
 module "reverse_proxy" {
-  source = "./modules/reverse_proxy"
-
-  project_id         = var.project_id
-  region             = var.region
-  zone               = var.zone
-  network_name       = module.network.network_name
-  public_subnet_name = module.network.public_subnet_name
+  source                = "./modules/reverse_proxy"
+  project_id            = var.project_id
+  region                = var.region
+  zone                  = var.zone
+  size                  = var.size
+  network_name          = module.network.network_name
+  public_subnet_name    = module.network.public_subnet_name
+  ssh_path_over_bastion = var.ssh_path_over_bastion
+  ssh_user              = var.ssh_user
 }
 
 # Database instance
 module "database" {
-  source              = "./modules/database"
-  zone                = var.zone
-  machine_type        = var.machine_type
-  image               = var.image
-  size                = var.size
-  ssh_path            = var.ssh_path
-  ssh_user            = var.ssh_user
-  public_subnet_name  = module.network.public_subnet_name
-  private_subnet_name = module.network.private_subnet_name
+  source                = "./modules/database"
+  zone                  = var.zone
+  db_machine_type       = var.db_machine_type
+  image                 = var.image
+  size                  = var.size
+  ssh_path_over_bastion = var.ssh_path_over_bastion
+  ssh_user              = var.ssh_user
+  public_subnet_name    = module.network.public_subnet_name
+  private_subnet_name   = module.network.private_subnet_name
 }
 
 module "dump_bucket" {
-  source      = "./modules/storage"
-  project_id  = var.project_id
-  bucket_name = var.bucket_name
-  location    = var.region
+  source        = "./modules/storage"
+  project_id    = var.project_id
+  bucket_name   = var.bucket_name
+  location      = var.region
+  storage_class = var.storage_class
 }

@@ -1,5 +1,7 @@
-resource "google_compute_instance" "reverse_proxy" {
-  name         = "reverse-proxy"
+# Bastion
+resource "google_compute_instance" "bastion" {
+  name         = "bastion"
+  project      = var.project_id
   machine_type = var.machine_type
   zone         = var.zone
 
@@ -10,8 +12,9 @@ resource "google_compute_instance" "reverse_proxy" {
     }
   }
 
+
   metadata = {
-    ssh-keys = "${var.ssh_user}:${file(var.ssh_path_over_bastion)}"
+    ssh-keys = "${var.ssh_user}:${chomp(file(var.ssh_path_to_bastion))}"
   }
 
   network_interface {
@@ -19,5 +22,5 @@ resource "google_compute_instance" "reverse_proxy" {
     access_config {}
   }
 
-  tags = ["reverse-proxy"]
+  tags = ["bastion"]
 }

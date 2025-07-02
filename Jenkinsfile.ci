@@ -28,6 +28,7 @@ pipeline {
                 dir('backend') {
                     dir('backend'){
                         sh 'gradle clean -x test'
+                        sh 'ls -l build/libs'
                     }
                 }
             }
@@ -43,19 +44,10 @@ pipeline {
             }
         }
 
-       stage('Sonar Scanning') {
+        stage('Sonar Scanning') {
             steps {
-                dir('backend') {
-                    dir('backend') {
-                       withSonarQubeEnv(installationName: 'SonarQube') {
-                            sh '''
-                            sonar-scanner \
-                                -Dsonar.projectKey=class_schedule \
-                                -Dsonar.sources=src \
-                                -Dsonar.java.binaries=build/classes/java/main
-                            '''
-                        }
-                    }
+                withSonarQubeEnv('SonarQube') {
+                    sh 'sonar-scanner'
                 }
             }
         }

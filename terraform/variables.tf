@@ -44,10 +44,6 @@ variable "size" {
   type    = number
 }
 
-variable "ssh_path" {
-  type    = string
-}
-
 variable "ssh_user" {
   type    = string
 }
@@ -58,4 +54,16 @@ variable "bucket_name" {
 
 variable "location" {
   type    = string 
+}
+
+variable "storage_class" {
+  type    = string  
+}
+
+variable "ssh_path_to_bastion" {
+  type    = string
+}
+
+variable "ssh_path_over_bastion" {
+  type    = string
 }

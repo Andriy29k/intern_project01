@@ -27,7 +27,7 @@ variable "zone" {
   type = string
 }
 
-variable "ssh_path_over_bastion" {
+variable "ssh_path_to_bastion" {
   type = string
 }
 

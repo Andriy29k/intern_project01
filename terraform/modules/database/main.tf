@@ -1,6 +1,6 @@
 resource "google_compute_instance" "database" {
   name         = "database"
-  machine_type = var.machine_type
+  machine_type = var.db_machine_type
   zone         = var.zone
 
   boot_disk {
@@ -11,12 +11,11 @@ resource "google_compute_instance" "database" {
   }
 
   metadata = {
-    ssh-keys = "${var.ssh_user}:${chomp(file(var.ssh_path))}"
+    ssh-keys = "${var.ssh_user}:${chomp(file(var.ssh_path_over_bastion))}"
   }
   
   network_interface {
     subnetwork = var.private_subnet_name
-    # Без access_config => немає зовнішнього IP
   }
 
   tags = ["database"]

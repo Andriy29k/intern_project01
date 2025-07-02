@@ -10,6 +10,12 @@ variable "bucket_name" {
   
 }
 
+variable "storage_class" {
+    description = "The storage class for the GCS bucket"
+    type        = string
+  
+}
+
 variable "location" {
     description = "The location for the GCS bucket"
     type        = string

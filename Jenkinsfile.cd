@@ -3,22 +3,68 @@ pipeline {
     tools {
             terraform 'terraform-50623'
         }
+    stages {
+        stage('Deploy Infrastructure') {
+            steps {
+                dir('terraform') {
+                    sh 'terraform apply --auto-approve'
+                }
+            }   
+        }
 
-    stage('Deploy Infrastructure') {
-        steps {
-            dir('terraform') {
-                sh 'terraform apply -auto-approve'
+        stage('Upload Artifacts to GCS') {
+            steps {
+                dir('frontend') {
+                    dir('frontend') {
+                        gcpStorageUpload(
+                            bucket: 'class-schedule-dump',
+                            credentialsId: 'GCP_CREDENTIALS',
+                            source: 'frontend-artifact.tar.gz',
+                            destination: 'frontend-artifact.tar.gz'
+                        )
+                    }    
+                }
+                dir('backend') {
+                    dir('backend') {
+                        dir('build/libs') {
+                            gcpStorageUpload(
+                                bucket: 'class-schedule-dump',
+                                credentialsId: 'GCP_CREDENTIALS',
+                                source: 'backend-artifact.tar.gz',
+                                destination: 'backend-artifact.tar.gz'
+                            )
+                        }
+                    }
+                }
+                gcpStorageUpload(
+                    bucket: 'class-schedule-dump',
+                    credentialsId: 'GCP_CREDENTIALS',
+                    source: 'backend-artifact.tar.gz',
+                    destination: 'backend-artifact.tar.gz'
+                )
             }
         }
-    }
+
+        stage('Ansible configuration') {
+            steps {
+                dir('ansible') {
+                    dir('files'){
+                        sh 'bash generate_inventory.sh'
+                        sh 'ansible-playbook -i inventory.ini generate_inventory.yml'
+                    }
+                }
+            }
+        }
 
 
         // stage('Deploy Application') {
         //     steps {
+        //         sh 'ansible/files/generate_inventory.sh'
         //         dir('ansible') {
         //             sh 'ansible-playbook -i inventory/production deploy.yml'
         //             sh 'ansible-playbook -i inventory/production post_deploy.yml'
         //         }
         //     }
         // }
+    }   
 }

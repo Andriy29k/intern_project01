@@ -1,7 +1,7 @@
-resource "google_storage_bucket" "dump_bucket" {
-  name          = "class-schedule-dump"
-  location      = "US"
-  storage_class = "STANDARD"
+resource "google_storage_bucket" "artifacts" {
+  name          = var.bucket_name
+  location      = var.location
+  storage_class = var.storage_class
 
   versioning {
     enabled = false
@@ -11,7 +11,6 @@ resource "google_storage_bucket" "dump_bucket" {
 
   labels = {
     environment = "prod"
-    type        = "sql-dump"
+    type        = "artifacts"
   }
-  
 }

@@ -3,7 +3,7 @@
   type        = string   
  }
 
-variable "machine_type" {
+variable "db_machine_type" {
   description = "The type of machine to create"
   type        = string
 }
@@ -18,7 +18,7 @@ variable "size" {
   type        = number  
 }
 
-variable "ssh_path" {
+variable "ssh_path_over_bastion" {
   type    = string
 }
 
