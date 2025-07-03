@@ -131,7 +131,10 @@ pipeline {
                 }
                 dir('ansible/playbooks') {
                     sh 'ansible-playbook -i ../inventory.ini ssh_config.yml'
-                }                    
+                }
+                dir('ansible') {
+                    ansible all -i inventory.ini -m ping                    
+                }
             }
         }
 
