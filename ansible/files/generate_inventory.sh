@@ -42,22 +42,22 @@ INVENTORY_PATH="inventory.ini"
 echo "Inventory generation..."
 cat > "$INVENTORY_PATH" <<EOF
 [bastion_group]
-bastion ansible_host=$BASTION_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$BASTION_KEY
+bastion ansible_host=$BASTION_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$BASTION_KEY 
 
 [frontend_group]
-frontend ansible_host=$FRONTEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY
+frontend ansible_host=$FRONTEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyJump=$SSH_USER@$BASTION"
 
 [backend_group]
-backend ansible_host=$BACKEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY
+backend ansible_host=$BACKEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyJump=$SSH_USER@$BASTION"
 
 [monitoring_group]
-monitoring ansible_host=$MONITORING_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY
+monitoring ansible_host=$MONITORING_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyJump=$SSH_USER@$BASTION"
 
 [reverse_proxy_group]
-reverse_proxy ansible_host=$REVERSE_PROXY_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY
+reverse_proxy ansible_host=$REVERSE_PROXY_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyJump=$SSH_USER@$BASTION"
 
 [database_group]
-database ansible_host=$DATABASE_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY
+database ansible_host=$DATABASE_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyJump=$SSH_USER@$BASTION"
 EOF
 
 echo "Success!"
