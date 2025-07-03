@@ -21,21 +21,6 @@ pipeline {
             }   
         }
 
-        stage('Destroy Infrastructure') {
-            steps {
-                input message: 'Are you sure you want to destroy infrastructure?'
-                dir('terraform') {
-                    withCredentials([file(credentialsId: 'TERRAFORM-TFVARS', variable: 'TFVARS_FILE')]) {
-                        withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_CREDENTIALS')]) {
-                            sh """
-                                terraform destroy -auto-approve -var "google_credentials_file=${GOOGLE_CREDENTIALS}" -var-file=${TFVARS_FILE}
-                            """
-                        }
-                    }
-                }
-            }   
-        }
-
         stage('Upload Artifacts to GCS') {
             steps {
                 withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_APPLICATION_CREDENTIALS'),
@@ -77,6 +62,23 @@ pipeline {
                 }                    
             }
         }
+
+        stage('Destroy Infrastructure') {
+            steps {
+                input message: 'Are you sure you want to destroy infrastructure?'
+                dir('terraform') {
+                    withCredentials([file(credentialsId: 'TERRAFORM-TFVARS', variable: 'TFVARS_FILE')]) {
+                        withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_CREDENTIALS')]) {
+                            sh """
+                                terraform destroy -auto-approve -var "google_credentials_file=${GOOGLE_CREDENTIALS}" -var-file=${TFVARS_FILE}
+                            """
+                        }
+                    }
+                }
+            }   
+        }
+
+        
 
 
         // stage('Deploy Application') {
