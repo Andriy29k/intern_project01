@@ -65,22 +65,22 @@ pipeline {
         //     }
         // }
 
-        // stage('Deploy Infrastructure') {
-        //     steps {
-        //         dir('terraform') {
-        //             withCredentials([file(credentialsId: 'TERRAFORM-TFVARS', variable: 'TFVARS_FILE')]) {
-        //                 withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_CREDENTIALS')]) {
-        //                     sh """    
-        //                         terraform init
-        //                         terraform validate
-        //                         terraform plan -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
-        //                         terraform apply -auto-approve -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
-        //                     """
-        //                 }
-        //             }
-        //         }
-        //     }   
-        // }
+        stage('Deploy Infrastructure') {
+            steps {
+                dir('terraform') {
+                    withCredentials([file(credentialsId: 'TERRAFORM-TFVARS', variable: 'TFVARS_FILE')]) {
+                        withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_CREDENTIALS')]) {
+                            sh """    
+                                terraform init
+                                terraform validate
+                                terraform plan -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
+                                terraform apply -auto-approve -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
+                            """
+                        }
+                    }
+                }
+            }   
+        }
 
         // stage('Upload Artifacts to GCS') {
         //     steps {
