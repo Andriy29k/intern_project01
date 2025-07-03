@@ -7,7 +7,6 @@ if ! command -v jq &> /dev/null; then
 fi
 
 cd ../../terraform
-
 terraform output -json | tee tf_outputs.json
 
 if [[ ! -s tf_outputs.json ]]; then
@@ -23,41 +22,40 @@ MONITORING_IP=$(jq -r '.monitoring_internal_ip.value' tf_outputs.json)
 DATABASE_IP=$(jq -r '.database_internal_ip.value' tf_outputs.json)
 SSH_USER=$(jq -r '.ssh_user.value' tf_outputs.json)
 
-BASTION_KEY="$HOME/.ssh/id_rsa_bastion"
-OVER_BASTION_KEY="$HOME/.ssh/id_rsa_over_bastion"
+BASTION_KEY="/var/lib/jenkins/.ssh/id_rsa_bastion"
+OVER_BASTION_KEY="/var/lib/jenkins/.ssh/id_rsa_over_bastion"
 
 if [[ ! -f "$BASTION_KEY" ]]; then
   echo "Key not found: $BASTION_KEY"
   exit 1
 fi
+
 if [[ ! -f "$OVER_BASTION_KEY" ]]; then
   echo "Key over bastion not found: $OVER_BASTION_KEY"
   exit 1
 fi
 
 cd ../ansible
-
 INVENTORY_PATH="inventory.ini"
 
-echo "Inventory generation..."
 cat > "$INVENTORY_PATH" <<EOF
 [bastion_group]
-bastion ansible_host=$BASTION_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$BASTION_KEY 
+bastion ansible_host=$BASTION_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$BASTION_KEY
 
 [frontend_group]
-frontend ansible_host=$FRONTEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyCommand=ssh -i /var/lib/jenkins/.ssh/id_rsa_bastion -W %h:%p andriy29k@34.138.153.250"
+frontend ansible_host=$FRONTEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyCommand=ssh -i $BASTION_KEY -W %h:%p $SSH_USER@$BASTION_IP"
 
 [backend_group]
-backend ansible_host=$BACKEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyCommand=ssh -i /var/lib/jenkins/.ssh/id_rsa_bastion -W %h:%p andriy29k@34.138.153.250"
+backend ansible_host=$BACKEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyCommand=ssh -i $BASTION_KEY -W %h:%p $SSH_USER@$BASTION_IP"
 
 [monitoring_group]
-monitoring ansible_host=$MONITORING_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyCommand=ssh -i /var/lib/jenkins/.ssh/id_rsa_bastion -W %h:%p andriy29k@34.138.153.250"
+monitoring ansible_host=$MONITORING_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyCommand=ssh -i $BASTION_KEY -W %h:%p $SSH_USER@$BASTION_IP"
 
 [reverse_proxy_group]
-reverse_proxy ansible_host=$REVERSE_PROXY_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyCommand=ssh -i /var/lib/jenkins/.ssh/id_rsa_bastion -W %h:%p andriy29k@34.138.153.250"
+reverse_proxy ansible_host=$REVERSE_PROXY_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyCommand=ssh -i $BASTION_KEY -W %h:%p $SSH_USER@$BASTION_IP"
 
 [database_group]
-database ansible_host=$DATABASE_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyCommand=ssh -i /var/lib/jenkins/.ssh/id_rsa_bastion -W %h:%p andriy29k@34.138.153.250"
+database ansible_host=$DATABASE_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyCommand=ssh -i $BASTION_KEY -W %h:%p $SSH_USER@$BASTION_IP"
 EOF
 
-echo "Success!"
+echo "Inventory generated at $INVENTORY_PATH"
