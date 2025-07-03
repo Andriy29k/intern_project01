@@ -23,8 +23,8 @@ MONITORING_IP=$(jq -r '.monitoring_internal_ip.value' tf_outputs.json)
 DATABASE_IP=$(jq -r '.database_internal_ip.value' tf_outputs.json)
 SSH_USER=$(jq -r '.ssh_user.value' tf_outputs.json)
 
-BASTION_KEY=~/.ssh/id_rsa_bastion
-OVER_BASTION_KEY=~/.ssh/id_rsa_over_bastion
+BASTION_KEY="$HOME/.ssh/id_rsa_bastion"
+OVER_BASTION_KEY="$HOME/.ssh/id_rsa_over_bastion"
 
 if [[ ! -f "$BASTION_KEY" ]]; then
   echo "Key not found: $BASTION_KEY"
