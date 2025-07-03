@@ -104,7 +104,7 @@ pipeline {
                             }
                             sh '''
                                 gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
-                                gsutil cp $DB_DUMP_PATH gs://class-schedule-artifacts/database-artifacts/
+                                gsutil cp $"DB_DUMP_PATH" gs://class-schedule-artifacts/database-artifacts/
                             '''
                         }
                     }
