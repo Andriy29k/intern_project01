@@ -11,11 +11,9 @@ pipeline {
                 dir('terraform') {
                     withCredentials([file(credentialsId: 'TERRAFORM-TFVARS', variable: 'TFVARS_FILE')]) {
                         withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_CREDENTIALS')]) {
-                            dir(terraform) {
-                                sh """
-                                    terraform destroy -auto-approve -var "google_credentials_file=${GOOGLE_CREDENTIALS}" -var-file=${TFVARS_FILE}
-                                """
-                            }
+                            sh """
+                                terraform destroy -auto-approve -var "google_credentials_file=${GOOGLE_CREDENTIALS}" -var-file=${TFVARS_FILE}
+                            """
                         }
                     }
                 }
