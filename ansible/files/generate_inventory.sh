@@ -48,7 +48,7 @@ bastion ansible_host=$BASTION_IP ansible_user=$SSH_USER ansible_ssh_private_key_
 frontend ansible_host=$FRONTEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args='-o ProxyJump=$SSH_USER@$BASTION_IP'
 
 [backend_group]
-backend_ansible_host=$BACKEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args='-o ProxyJump=$SSH_USER@$BASTION_IP'
+backend ansible_host=$BACKEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args='-o ProxyJump=$SSH_USER@$BASTION_IP'
 
 [monitoring_group]
 monitoring ansible_host=$MONITORING_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args='-o ProxyJump=$SSH_USER@$BASTION_IP'
