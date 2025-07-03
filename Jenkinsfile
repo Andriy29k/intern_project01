@@ -129,7 +129,7 @@ pipeline {
                         echo "============================================="
                     '''
                 }
-                dir('ansible') {
+                dir('ansible/playbooks') {
                     sh 'ansible-playbook -i inventory.ini ssh_config.yml'
                 }                    
             }
