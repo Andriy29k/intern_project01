@@ -89,7 +89,7 @@ pipeline {
                     withEnv(["PATH=${gcloud}/bin:${env.PATH}"]) {
                         withCredentials([
                             file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_APPLICATION_CREDENTIALS'),
-                            file(credentialsId: 'DB_DUMP_FILE', variable: 'DB_DUMP_PATH')]) {
+                            file(credentialsId: 'RESTORE_DUMP', variable: 'DB_DUMP_PATH')]) {
                             dir('frontend/frontend') {
                                 sh '''
                                     gsutil cp frontend-artifact.tar.gz gs://class-schedule-artifacts/frontend-artifacts/
