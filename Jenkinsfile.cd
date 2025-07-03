@@ -22,9 +22,6 @@ pipeline {
         }
 
         stage('Destroy Infrastructure') {
-            when {
-                expression { return params.DESTROY == true }
-            }
             steps {
                 input message: 'Are you sure you want to destroy infrastructure?'
                 dir('terraform') {
