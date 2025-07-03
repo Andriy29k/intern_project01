@@ -69,6 +69,6 @@ resource "google_compute_firewall" "internal-allow" {
     ports    = ["0-65535"]
   }
 
-  source_tags = ["frontend", "backend", "database", "reverse-proxy", "bastion"]
-  target_tags = ["frontend", "backend", "database", "reverse-proxy", "bastion"]
+  source_tags = ["frontend", "backend", "database", "reverse-proxy", "bastion", "monitoring"]
+  target_tags = ["frontend", "backend", "database", "reverse-proxy", "bastion", "monitoring"]
 }
