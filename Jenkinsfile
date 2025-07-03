@@ -23,16 +23,16 @@ pipeline {
                     credentialsId: 'github-credentials'
             }
         }
-        stage('Build Backend') {
-            steps {
-                dir('backend') {
-                    dir('backend'){
-                        sh 'gradle clean build -x test'
-                        sh 'ls -l build/libs'
-                    }
-                }
-            }
-        }
+        // stage('Build Backend') {
+        //     steps {
+        //         dir('backend') {
+        //             dir('backend'){
+        //                 sh 'gradle clean build -x test'
+        //                 sh 'ls -l build/libs'
+        //             }
+        //         }
+        //     }
+        // }
 
         // stage('Backend Tests') {
         //     steps {
@@ -52,65 +52,65 @@ pipeline {
         //     }
         // }
 
-        stage('Build Frontend') {
-            steps {
-                dir('frontend') {
-                    dir('frontend') {
-                        sh 'npm install'
-                        sh 'npm run build'
-                        sh 'tar -czf frontend-artifact.tar.gz build/' 
-                        archiveArtifacts artifacts: 'frontend-artifact.tar.gz', fingerprint: true
-                    }
-                }
-            }
-        }
+        // stage('Build Frontend') {
+        //     steps {
+        //         dir('frontend') {
+        //             dir('frontend') {
+        //                 sh 'npm install'
+        //                 sh 'npm run build'
+        //                 sh 'tar -czf frontend-artifact.tar.gz build/' 
+        //                 archiveArtifacts artifacts: 'frontend-artifact.tar.gz', fingerprint: true
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('Deploy Infrastructure') {
-            steps {
-                dir('terraform') {
-                    withCredentials([file(credentialsId: 'TERRAFORM-TFVARS', variable: 'TFVARS_FILE')]) {
-                        withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_CREDENTIALS')]) {
-                            sh """    
-                                terraform init
-                                terraform validate
-                                terraform plan -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
-                                terraform apply -auto-approve -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
-                            """
-                        }
-                    }
-                }
-            }   
-        }
+        // stage('Deploy Infrastructure') {
+        //     steps {
+        //         dir('terraform') {
+        //             withCredentials([file(credentialsId: 'TERRAFORM-TFVARS', variable: 'TFVARS_FILE')]) {
+        //                 withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_CREDENTIALS')]) {
+        //                     sh """    
+        //                         terraform init
+        //                         terraform validate
+        //                         terraform plan -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
+        //                         terraform apply -auto-approve -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
+        //                     """
+        //                 }
+        //             }
+        //         }
+        //     }   
+        // }
 
-        stage('Upload Artifacts to GCS') {
-            steps {
-                script {
-                    def gcloud = tool 'google-cloud-sdk'
-                    withEnv(["PATH=${gcloud}/bin:${env.PATH}"]) {
-                        withCredentials([
-                            file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_APPLICATION_CREDENTIALS'),
-                            file(credentialsId: 'RESTORE_DUMP', variable: 'DB_DUMP_PATH')]) {
-                            dir('frontend/frontend') {
-                                sh '''
-                                    gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
-                                    gsutil cp frontend-artifact.tar.gz gs://class-schedule-artifacts/frontend-artifacts/
-                                '''
-                            }
-                            dir('backend/backend/build/libs') {
-                                sh '''
-                                    gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
-                                    gsutil cp class_schedule.war gs://class-schedule-artifacts/backend-artifacts/ROOT.war
-                                '''
-                            }
-                            sh """
-                                gcloud auth activate-service-account --key-file="\$GOOGLE_APPLICATION_CREDENTIALS"
-                                gsutil cp "\$DB_DUMP_PATH" gs://class-schedule-artifacts/database-artifacts/
-                            """
-                        }
-                    }
-                }
-            }
-        }
+        // stage('Upload Artifacts to GCS') {
+        //     steps {
+        //         script {
+        //             def gcloud = tool 'google-cloud-sdk'
+        //             withEnv(["PATH=${gcloud}/bin:${env.PATH}"]) {
+        //                 withCredentials([
+        //                     file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_APPLICATION_CREDENTIALS'),
+        //                     file(credentialsId: 'RESTORE_DUMP', variable: 'DB_DUMP_PATH')]) {
+        //                     dir('frontend/frontend') {
+        //                         sh '''
+        //                             gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
+        //                             gsutil cp frontend-artifact.tar.gz gs://class-schedule-artifacts/frontend-artifacts/
+        //                         '''
+        //                     }
+        //                     dir('backend/backend/build/libs') {
+        //                         sh '''
+        //                             gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
+        //                             gsutil cp class_schedule.war gs://class-schedule-artifacts/backend-artifacts/ROOT.war
+        //                         '''
+        //                     }
+        //                     sh """
+        //                         gcloud auth activate-service-account --key-file="\$GOOGLE_APPLICATION_CREDENTIALS"
+        //                         gsutil cp "\$DB_DUMP_PATH" gs://class-schedule-artifacts/database-artifacts/
+        //                     """
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Ansible configuration') {
             steps {
