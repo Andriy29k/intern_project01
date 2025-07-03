@@ -98,8 +98,8 @@ pipeline {
                             }
                             dir('backend/backend/build/libs') {
                                 sh '''
-                                    gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
-                                    gsutil cp class-schedule.war gs://class-schedule-artifacts/backend-artifacts/ROOT.war
+                                    gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+                                    gsutil cp class_schedule.war gs://class-schedule-artifacts/backend-artifacts/ROOT.war
                                 '''
                             }
                             sh '''
