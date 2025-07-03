@@ -118,6 +118,18 @@ pipeline {
                     sh 'bash generate_inventory.sh'
                 }
                 dir('ansible') {
+                    sh '''
+                        echo "=== Inventory file content (inventory.ini) ==="
+                        if [ -f inventory.ini ]; then
+                            cat inventory.ini
+                        else
+                            echo "inventory.ini file not found!"
+                            exit 1
+                        fi
+                        echo "============================================="
+                    '''
+                }
+                dir('ansible') {
                     sh 'ansible-playbook -i inventory.ini generate_inventory.yml'
                 }                    
             }
