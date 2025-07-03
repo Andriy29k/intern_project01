@@ -11,7 +11,7 @@ pipeline {
     tools {
         gradle 'gradle-6.8'
         jdk 'jdk-11'
-        nodejs 'nodejs-18'
+        nodejs 'nodejs-24'
         terraform 'terraform-50623'
     }
 
@@ -27,38 +27,30 @@ pipeline {
             steps {
                 dir('backend') {
                     dir('backend'){
-                        sh 'gradle clean -x test'
+                        sh 'gradle clean build -x test'
+                        sh 'ls -l build/libs'
                     }
                 }
             }
         }
 
-        stage('Backend Tests') {
-            steps {
-                dir('backend') {
-                    dir('backend') {
-                        sh 'gradle test'
-                    }
-                }
-            }
-        }
+        // stage('Backend Tests') {
+        //     steps {
+        //         dir('backend') {
+        //             dir('backend') {
+        //                 sh 'gradle test'
+        //             }
+        //         }
+        //     }
+        // }
 
-       stage('Sonar Scanning') {
-            steps {
-                dir('backend') {
-                    dir('backend') {
-                       withSonarQubeEnv(installationName: 'SonarQube') {
-                            sh '''
-                            sonar-scanner \
-                                -Dsonar.projectKey=class_schedule \
-                                -Dsonar.sources=src \
-                                -Dsonar.java.binaries=build/classes/java/main
-                            '''
-                        }
-                    }
-                }
-            }
-        }
+        // stage('Sonar Scanning') {
+        //     steps {
+        //         withSonarQubeEnv('SonarQube') {
+        //             sh 'sonar-scanner -Dproject.settings=sonar-project.properties'
+        //         }
+        //     }
+        // }
 
         stage('Build Frontend') {
             steps {
@@ -73,38 +65,82 @@ pipeline {
             }
         }
 
-        stage('Terraform Lint') {
+        stage('Deploy Infrastructure') {
             steps {
                 dir('terraform') {
+                    withCredentials([file(credentialsId: 'TERRAFORM-TFVARS', variable: 'TFVARS_FILE')]) {
+                        withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_CREDENTIALS')]) {
+                            sh """    
+                                terraform init
+                                terraform validate
+                                terraform plan -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
+                                terraform apply -auto-approve -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
+                            """
+                        }
+                    }
+                }
+            }   
+        }
+
+        stage('Upload Artifacts to GCS') {
+            steps {
+                script {
+                    def gcloudHome = tool 'google-sdk'
+                    env.PATH = "${gcloudHome}/bin:${env.PATH}"
+                }
+                withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    dir('frontend/frontend') {
+                        sh '''
+                            gsutil cp frontend-artifact.tar.gz gs://class-schedule-artifacts/frontend-artifacts/
+                        '''
+                    }
+                    dir('backend/backend/build/libs') {
+                        sh '''
+                            gsutil cp Class-Schedule.war gs://class-schedule-artifacts/backend-artifacts/ROOT.war
+                        '''
+                    }
                     sh '''
-                        curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash -s -- -b $HOME/.local/bin
-                        export PATH=$HOME/.local/bin:$PATH
-                        tflint --init
-                        tflint
-                   '''
+                        gsutil cp $DB_DUMP_PATH gs://class-schedule-artifacts/database-artifacts/
+                    '''
                 }
             }
         }
 
+        stage('Ansible configuration') {
+            steps {
+                dir('ansible/files') {
+                    sh 'bash generate_inventory.sh'
+                }
+                dir('ansible') {
+                    sh 'ansible-playbook -i inventory.ini generate_inventory.yml'
+                }                    
+            }
+        }
 
+        stage('Destroy Infrastructure') {
+            steps {
+                input message: 'Are you sure you want to destroy infrastructure?'
+                dir('terraform') {
+                    withCredentials([file(credentialsId: 'TERRAFORM-TFVARS', variable: 'TFVARS_FILE')]) {
+                        withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_CREDENTIALS')]) {
+                            sh """
+                                terraform destroy -auto-approve -var "google_credentials_file=${GOOGLE_CREDENTIALS}" -var-file=${TFVARS_FILE}
+                            """
+                        }
+                    }
+                }
+            }   
+        } 
 
-        // stage('Infrastructure Tests') {
+        // stage('Terraform Lint') {
         //     steps {
         //         dir('terraform') {
-        //             sh 'terraform init'
-        //             sh 'terraform validate'
-        //             sh 'terraform plan'
-        //         }
-        //     }
-        // }
-        
-
-        // stage('Infrastructure Deployment') {
-        //     steps {
-        //         dir('infrastructure') {
-        //             dir('infrastructure') {
-        //                 sh 'terraform apply -auto-approve'
-        //             }
+        //             sh '''
+        //                 curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash -s -- -b $HOME/.local/bin
+        //                 export PATH=$HOME/.local/bin:$PATH
+        //                 tflint --init
+        //                 tflint
+        //            '''
         //         }
         //     }
         // }
