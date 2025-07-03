@@ -92,18 +92,18 @@ pipeline {
                             file(credentialsId: 'RESTORE_DUMP', variable: 'DB_DUMP_PATH')]) {
                             dir('frontend/frontend') {
                                 sh '''
-                                    gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+                                    gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
                                     gsutil cp frontend-artifact.tar.gz gs://class-schedule-artifacts/frontend-artifacts/
                                 '''
                             }
                             dir('backend/backend/build/libs') {
                                 sh '''
-                                    gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+                                    gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
                                     gsutil cp class-schedule.war gs://class-schedule-artifacts/backend-artifacts/ROOT.war
                                 '''
                             }
                             sh '''
-                                gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+                                gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS"
                                 gsutil cp $DB_DUMP_PATH gs://class-schedule-artifacts/database-artifacts/
                             '''
                         }
