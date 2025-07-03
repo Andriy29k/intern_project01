@@ -58,5 +58,6 @@ reverse_proxy ansible_host=$REVERSE_PROXY_IP ansible_user=$SSH_USER ansible_ssh_
 
 [database_group]
 database ansible_host=$DATABASE_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args='-o ProxyCommand=ssh -i /var/lib/jenkins/.ssh/id_rsa_bastion -W %h:%p andriy29k@34.138.153.250'
+EOF
 
 echo "Success!"
