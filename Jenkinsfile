@@ -96,7 +96,7 @@ pipeline {
                     }
                     dir('backend/backend/build/libs') {
                         sh '''
-                            gsutil cp Class-Schedule.war gs://class-schedule-artifacts/backend-artifacts/ROOT.war
+                            gsutil cp class-schedule.war gs://class-schedule-artifacts/backend-artifacts/ROOT.war
                         '''
                     }
                     sh '''
