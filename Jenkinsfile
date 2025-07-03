@@ -130,7 +130,7 @@ pipeline {
                     '''
                 }
                 dir('ansible') {
-                    sh 'ansible-playbook -i inventory.ini generate_inventory.yml'
+                    sh 'ansible-playbook -i inventory.ini ssh_config.yml'
                 }                    
             }
         }
