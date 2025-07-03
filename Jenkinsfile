@@ -133,20 +133,22 @@ pipeline {
                     sh 'ansible-playbook -i ../inventory.ini ssh_config.yml'
                 }
                 dir('ansible') {
-                    echo "=== Inventory file content ==="
-                    if [ -f inventory.ini ]; then
-                        cat inventory.ini
-                    else
-                        echo "❌ inventory.ini not found!"
-                        exit 1
-                    fi
+                    sh '''
+                        echo "=== Inventory file content ==="
+                        if [ -f inventory.ini ]; then
+                            cat inventory.ini
+                        else
+                            echo "❌ inventory.ini not found!"
+                            exit 1
+                        fi
 
-                    echo "=== Checking SSH keys ==="
-                    test -f /var/lib/jenkins/.ssh/id_rsa_bastion || (echo "❌ Bastion key missing" && exit 1)
-                    test -f /var/lib/jenkins/.ssh/id_rsa_over_bastion || (echo "❌ Over bastion key missing" && exit 1)
+                        echo "=== Checking SSH keys ==="
+                        test -f /var/lib/jenkins/.ssh/id_rsa_bastion || (echo "❌ Bastion key missing" && exit 1)
+                        test -f /var/lib/jenkins/.ssh/id_rsa_over_bastion || (echo "❌ Over bastion key missing" && exit 1)
 
-                    echo "✅ Keys found, testing Ansible ping:"
-                    ANSIBLE_CONFIG=./ansible.cfg ansible all -i inventory.ini -m ping                  
+                        echo "✅ Keys found, testing Ansible ping:"
+                        ANSIBLE_CONFIG=./ansible.cfg ansible all -i inventory.ini -m ping                  
+                    '''
                 }
             }
         }
