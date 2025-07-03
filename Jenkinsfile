@@ -138,7 +138,9 @@ pipeline {
                         env | grep HOME
                         ls -la /var/lib/jenkins/.ssh/config
                     '''
-                    sh 'ANSIBLE_CONFIG=./ansible.cfg ansible all -i inventory.ini -m ping'                    
+                    sh '''
+                        ANSIBLE_CONFIG=./ansible.cfg ansible all -i inventory.ini -m ping
+                    '''                    
                 }
             }
         }
