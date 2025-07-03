@@ -85,21 +85,23 @@ pipeline {
         stage('Upload Artifacts to GCS') {
             steps {
                 script {
-                    def gcloudHome = tool 'google-sdk'
-                    env.PATH = "${gcloudHome}/bin:${env.PATH}"
+                    def gcloud = tool 'google-cloud-sdk'
                 }
                 withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     dir('frontend/frontend') {
                         sh '''
+                            export PATH=${gcloud}/bin:\$PATH
                             gsutil cp frontend-artifact.tar.gz gs://class-schedule-artifacts/frontend-artifacts/
                         '''
                     }
                     dir('backend/backend/build/libs') {
                         sh '''
+                            export PATH=${gcloud}/bin:\$PATH
                             gsutil cp class-schedule.war gs://class-schedule-artifacts/backend-artifacts/ROOT.war
                         '''
                     }
                     sh '''
+                        export PATH=${gcloud}/bin:\$PATH
                         gsutil cp $DB_DUMP_PATH gs://class-schedule-artifacts/database-artifacts/
                     '''
                 }
