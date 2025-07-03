@@ -7,6 +7,7 @@
     bastion_host: "{{ hostvars['bastion']['ansible_host'] }}"
     bastion_user: "{{ hostvars['bastion']['ansible_user'] }}"
     bastion_key: "{{ hostvars['bastion']['ansible_ssh_private_key_file'] }}"
+    over_bastion_user: "{{ hostvars['frontend']['ansible_user'] | default(bastion_user) }}"
     over_bastion_key: "{{ hostvars['frontend']['ansible_ssh_private_key_file'] }}"
 
   tasks:
@@ -29,14 +30,10 @@
               StrictHostKeyChecking no
               UserKnownHostsFile=/dev/null
 
-          {% for host in groups['all'] if host != 'localhost' and host != 'bastion' %}
-          Host {{ host }}
-              HostName {{ hostvars[host]['ansible_host'] }}
-              User {{ hostvars[host]['ansible_user'] }}
+          Host frontend backend monitoring reverse_proxy database
+              ProxyCommand ssh -W %h:%p -i {{ bastion_key }} {{ bastion_user }}@{{ bastion_host }}
+              User {{ over_bastion_user }}
               IdentityFile {{ over_bastion_key }}
-              ProxyJump {{ bastion_user }}@{{ bastion_host }}
               StrictHostKeyChecking no
               UserKnownHostsFile=/dev/null
-
-          {% endfor %}
         mode: '0600'
