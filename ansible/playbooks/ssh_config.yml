@@ -14,9 +14,9 @@
       copy:
         src: "{{ ssh_config_path }}"
         dest: "{{ ssh_config_path }}.backup"
-        remote_src: yes
-        backup: yes
-      ignore_errors: yes
+        remote_src: true
+        backup: true
+      ignore_errors: true
 
     - name: Write SSH config file
       copy:
