@@ -133,7 +133,12 @@ pipeline {
                     sh 'ansible-playbook -i ../inventory.ini ssh_config.yml'
                 }
                 dir('ansible') {
-                    sh 'ansible all -i inventory.ini -m ping'                    
+                    sh '''
+                        whoami
+                        env | grep HOME
+                        ls -la /var/lib/jenkins/.ssh/config
+                    '''
+                    sh 'ANSIBLE_CONFIG=./ansible.cfg ansible all -i inventory.ini -m ping'                    
                 }
             }
         }
