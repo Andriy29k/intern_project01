@@ -45,19 +45,18 @@ cat > "$INVENTORY_PATH" <<EOF
 bastion ansible_host=$BASTION_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$BASTION_KEY 
 
 [frontend_group]
-frontend ansible_host=$FRONTEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyJump=$SSH_USER@$BASTION_IP -o IdentityFile=/var/lib/jenkins/.ssh/id_rsa_bastion"
+frontend ansible_host=$FRONTEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args='-o ProxyCommand=ssh -i /var/lib/jenkins/.ssh/id_rsa_bastion -W %h:%p andriy29k@34.138.153.250'
 
 [backend_group]
-backend ansible_host=$BACKEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyJump=$SSH_USER@$BASTION_IP -o IdentityFile=/var/lib/jenkins/.ssh/id_rsa_bastion"
+backend ansible_host=$BACKEND_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args='-o ProxyCommand=ssh -i /var/lib/jenkins/.ssh/id_rsa_bastion -W %h:%p andriy29k@34.138.153.250'
 
 [monitoring_group]
-monitoring ansible_host=$MONITORING_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyJump=$SSH_USER@$BASTION_IP -o IdentityFile=/var/lib/jenkins/.ssh/id_rsa_bastion"
+monitoring ansible_host=$MONITORING_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args='-o ProxyCommand=ssh -i /var/lib/jenkins/.ssh/id_rsa_bastion -W %h:%p andriy29k@34.138.153.250'
 
 [reverse_proxy_group]
-reverse_proxy ansible_host=$REVERSE_PROXY_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyJump=$SSH_USER@$BASTION_IP -o IdentityFile=/var/lib/jenkins/.ssh/id_rsa_bastion"
+reverse_proxy ansible_host=$REVERSE_PROXY_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args='-o ProxyCommand=ssh -i /var/lib/jenkins/.ssh/id_rsa_bastion -W %h:%p andriy29k@34.138.153.250'
 
 [database_group]
-database ansible_host=$DATABASE_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args="-o ProxyJump=$SSH_USER@$BASTION_IP -o IdentityFile=/var/lib/jenkins/.ssh/id_rsa_bastion"
-EOF
+database ansible_host=$DATABASE_IP ansible_user=$SSH_USER ansible_ssh_private_key_file=$OVER_BASTION_KEY ansible_ssh_common_args='-o ProxyCommand=ssh -i /var/lib/jenkins/.ssh/id_rsa_bastion -W %h:%p andriy29k@34.138.153.250'
 
 echo "Success!"
