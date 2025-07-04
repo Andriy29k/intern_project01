@@ -53,3 +53,11 @@ output "ssh_path_to_bastion" {
 output "ssh_path_over_bastion" {
   value = var.ssh_path_over_bastion
 }
+
+output "debug_machines" {
+  value = keys(module.compute.all_internal_ips)
+}
+
+output "debug_machine_ips" {
+  value = module.compute.all_internal_ips
+}

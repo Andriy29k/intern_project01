@@ -16,6 +16,7 @@ output "monitoring_internal_ip" {
 output "all_internal_ips" {
   description = "Map of internal IPs for all compute services"
   value = {
-    for svc, instance in google_compute_instance.service : svc => instance.network_interface[0].network_ip
+    for svc, instance in google_compute_instance.service :
+    svc => instance.network_interface[0].network_ip
   }
 }
