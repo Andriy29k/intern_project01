@@ -14,7 +14,7 @@ RUN apk add --no-cache curl && \
     mv /opt/apache-tomcat-9.0.85 /opt/tomcat && \
     rm -rf /opt/tomcat/webapps/* /tmp/tomcat.tar.gz
 
-COPY  ./class_schedule /opt/tomcat/webapps/ROOT.war
+COPY  ./ROOT /opt/tomcat/webapps/
 
 COPY entrypoint.sh /conf/entrypoint.sh
 RUN chmod +x /conf/entrypoint.sh
