@@ -16,10 +16,18 @@ pipeline {
 
         stage ('Ansible') {
             steps {
+                dir('ansible/files') {
+                    sh '''
+                        chmod +x generate_inventory_from_config.sh
+                        bash generate_inventory_from_config.sh
+                    '''
+                }
                 dir('ansible') {
-                    sh 'ansible all -i inventory.ini -m ping'
-                    sh 'ansible-galaxy collection install community.docker'
-                    sh 'ansible-playbook -i inventory.ini site.yml'
+                    sh '''
+                        ansible all -i inventory.ini -m ping
+                        ansible-galaxy collection install community.docker'
+                        ansible-playbook -i inventory.ini site.yml
+                    '''
                 }
             }
         }
