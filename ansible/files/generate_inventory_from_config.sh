@@ -1,7 +1,7 @@
 #!/bin/bash
 
 input="/var/lib/jenkins/.ssh/config"
-output="../"
+output="../inventory.ini"
 
 declare -A group_map=(
   ["bastion"]="bastion_group"
