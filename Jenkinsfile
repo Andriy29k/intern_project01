@@ -141,20 +141,19 @@ pipeline {
                             echo "inventory.ini not found!"
                             exit 1
                         fi
-
+        
                         echo "=== Checking SSH keys ==="
                         test -f /var/lib/jenkins/.ssh/id_rsa_bastion || (echo "Bastion key missing" && exit 1)
                         test -f /var/lib/jenkins/.ssh/id_rsa_over_bastion || (echo "Over bastion key missing" && exit 1)
+        
                         echo "=== Deleting previous known hosts ==="
-                                          
+                        rm -f /var/lib/jenkins/.ssh/known_hosts
+        
+                        echo "=== Generating known_hosts ==="
+                        bash files/generate_known_hosts.sh
                     '''
-                    dir('files'){
-                        sh '''
-                            bash files/generate_known_hosts.sh
-                        '''
-                    }
                     sh '''  
-                        echo "Ansible ping:"
+                        echo "=== Ansible ping ==="
                         ANSIBLE_CONFIG=./ansible.cfg ansible all -i inventory.ini -m ping
                     '''
                 }
