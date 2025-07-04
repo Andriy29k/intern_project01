@@ -10,14 +10,13 @@ Host bastion
 
 # Machines
 ${join("\n", [
-  for machine in var.machines : <<-EOT
-Host ${machine}
-    HostName ${var.machine_private_ips[machine]}
-    User ${var.ssh_user}
-    IdentityFile ${var.ssh_path_over_bastion}
-    ProxyJump bastion
-    StrictHostKeyChecking no
-  EOT
+  for machine in var.machines : format(
+    "Host %s\n HostName %s\n User %s\n IdentityFile %s\n ProxyJump bastion\n StrictHostKeyChecking no",
+    machine,
+    var.machine_private_ips[machine],
+    var.ssh_user,
+    var.ssh_path_over_bastion
+  )
 ])}
 EOT
 }
