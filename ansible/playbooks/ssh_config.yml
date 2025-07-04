@@ -6,6 +6,15 @@
     ssh_user: "{{ lookup('file', '../../terraform/tf_outputs.json') | from_json | json_query('ssh_user.value') }}"
     bastion_key: "/var/lib/jenkins/.ssh/id_rsa_bastion"
     over_bastion_key: "/var/lib/jenkins/.ssh/id_rsa_over_bastion"
+    inventory_path: "../inventory.ini"
+    ansible_cfg: "./ansible.cfg"
+    groups_to_ping:
+      - bastion_group
+      - frontend_group
+      - backend_group
+      - monitoring_group
+      - reverse_proxy_group
+      - database_group
 
   tasks:
     - name: Create SSH config from template
@@ -14,16 +23,23 @@
         dest: /var/lib/jenkins/.ssh/config
         mode: '0600'
 
-    - name: Test connectivity to all hosts
+    - name: Ping groups sequentially
+      vars:
+        current_group: "{{ item }}"
       command: >
-        ansible all
-        -i ../inventory.ini
+        ansible "{{ current_group }}"
+        -i "{{ inventory_path }}"
         -m ping
-      register: ping_result
       environment:
-        ANSIBLE_CONFIG: "./ansible.cfg"
+        ANSIBLE_CONFIG: "{{ ansible_cfg }}"
+      register: ping_result
+      failed_when: ping_result.rc != 0
       changed_when: false
+      loop: "{{ groups_to_ping }}"
 
-    - name: Show ping results
+    - name: Show ping results per group
       debug:
-        var: ping_result.stdout_lines
+        msg: |
+          Group {{ item.item }} ping results:
+          {{ item.stdout }}
+      loop: "{{ ping_result.results }}"
