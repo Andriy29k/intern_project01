@@ -138,15 +138,16 @@ pipeline {
                         if [ -f inventory.ini ]; then
                             cat inventory.ini
                         else
-                            echo "❌ inventory.ini not found!"
+                            echo "inventory.ini not found!"
                             exit 1
                         fi
 
                         echo "=== Checking SSH keys ==="
-                        test -f /var/lib/jenkins/.ssh/id_rsa_bastion || (echo "❌ Bastion key missing" && exit 1)
-                        test -f /var/lib/jenkins/.ssh/id_rsa_over_bastion || (echo "❌ Over bastion key missing" && exit 1)
-
-                        echo "✅ Keys found, testing Ansible ping:"
+                        test -f /var/lib/jenkins/.ssh/id_rsa_bastion || (echo "Bastion key missing" && exit 1)
+                        test -f /var/lib/jenkins/.ssh/id_rsa_over_bastion || (echo "Over bastion key missing" && exit 1)
+                        echo "=== Deleting previous known hosts ==="
+                        rm ${HOME}/.ssh/known_hosts
+                        echo "Keys found, testing Ansible ping:"
                         ANSIBLE_CONFIG=./ansible.cfg ansible all -i inventory.ini -m ping                  
                     '''
                 }
