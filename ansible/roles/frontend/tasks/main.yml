@@ -1,21 +1,28 @@
-- name: Install Docker
-  apt:
-    name: docker.io
-    state: present
-    update_cache: true
+- name: Stop frontend container if running
+  community.docker.docker_container:
+    name: "{{ docker_container_name }}"
+    state: stopped
+    timeout: 10
+  ignore_errors: true
 
-- name: Start Docker service
-  service:
-    name: docker
-    state: started
-    enabled: true
+- name: Remove frontend container if exists
+  community.docker.docker_container:
+    name: "{{ docker_container_name }}"
+    state: absent
+  ignore_errors: true
 
-- name: Pull frontend Docker image
+- name: Remove old frontend image if exists
+  community.docker.docker_image:
+    name: "{{ docker_image }}"
+    state: absent
+  ignore_errors: true
+
+- name: Pull latest frontend Docker image
   community.docker.docker_image:
     name: "{{ docker_image }}"
     source: pull
 
-- name: Run or update frontend container
+- name: Run frontend container
   community.docker.docker_container:
     name: "{{ docker_container_name }}"
     image: "{{ docker_image }}"
@@ -25,15 +32,4 @@
       - "{{ host_port }}:{{ container_port }}"
     env:
       BACKEND_IP: "{{ backend_ip }}"
-    recreate: yes 
-
-- name: Stop frontend container
-  community.docker.docker_container:
-    name: "{{ docker_container_name }}"
-    state: stopped
-    timeout: 10
-
-- name: Start frontend container
-  community.docker.docker_container:
-    name: "{{ docker_container_name }}"
-    state: started
+    recreate: true
