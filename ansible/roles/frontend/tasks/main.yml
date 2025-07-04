@@ -26,8 +26,14 @@
     env:
       BACKEND_IP: "{{ backend_ip }}"
     recreate: yes 
-    
-- name: Restart frontend container
+
+- name: Stop frontend container
   community.docker.docker_container:
     name: "{{ docker_container_name }}"
-    state: restarted
+    state: stopped
+    timeout: 10
+
+- name: Start frontend container
+  community.docker.docker_container:
+    name: "{{ docker_container_name }}"
+    state: started
