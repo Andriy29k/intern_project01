@@ -77,10 +77,14 @@ pipeline {
         stage('Backend image build') {
             steps {
                 script {
-                    sh '''
-                        mkdir -p backend/ROOT
-                        unzip -q backend/build/libs/*.war -d backend/ROOT
-                    '''
+                    dir('backend') {
+                        dir('backend') {
+                            sh '''
+                            mkdir -p backend/ROOT
+                            unzip -q build/libs/*.war -d ../ROOT
+                        '''
+                        }
+                    }
                     withCredentials([usernamePassword(
                         credentialsId: 'DOCKERHUB_CREDENTIALS',
                         usernameVariable: 'DOCKERHUB_USERNAME',
