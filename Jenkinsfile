@@ -112,23 +112,13 @@ pipeline {
         //     }
         // }
 
-        stage('Generate Inventory') {
-            steps {
-                dir('ansible/files') {
-                    sh 'bash generate_inventory.sh'
-                }
-            }       
-        }
-
-        stage('Generate SSH Config') {
-            steps {
-                dir('ansible/playbooks') {
-                    sh 'ansible-playbook ssh_config.yml'
-                }
-            }
-        }
-
-
+        // stage('Generate Inventory') {
+        //     steps {
+        //         dir('ansible/files') {
+        //             sh 'bash generate_inventory.sh'
+        //         }
+        //     }       
+        // }
 
         stage('Destroy Infrastructure') {
             steps {
@@ -144,6 +134,31 @@ pipeline {
                 }
             }   
         } 
+
+        // stage('Generate SSH Config') {
+        //     steps {
+        //         dir('ansible/playbooks') {
+        //             sh 'ansible-playbook ssh_config.yml'
+        //         }
+        //     }
+        // }
+
+
+
+        // stage('Destroy Infrastructure') {
+        //     steps {
+        //         input message: 'Are you sure you want to destroy infrastructure?'
+        //         dir('terraform') {
+        //             withCredentials([file(credentialsId: 'TERRAFORM-TFVARS', variable: 'TFVARS_FILE')]) {
+        //                 withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_CREDENTIALS')]) {
+        //                     sh """
+        //                        terraform destroy -auto-approve -var "google_credentials_file=${GOOGLE_CREDENTIALS}" -var-file="${TFVARS_FILE}"
+        //                     """
+        //                 }
+        //             }
+        //         }
+        //     }   
+        // } 
 
         // stage('Terraform Lint') {
         //     steps {
