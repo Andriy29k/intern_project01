@@ -72,10 +72,11 @@ variable "bastion_public_ip" {
   type = string
 }
 
-variable "machines" {
-  type = list(string)
-}
-
 variable "machine_private_ips" {
   type = map(string)
+}
+
+variable "machines" {
+  type    = list(string)
+  default = ["frontend", "backend", "monitoring", "reverse_proxy", "database"]
 }
