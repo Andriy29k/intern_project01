@@ -148,7 +148,7 @@ pipeline {
                         echo "=== Deleting previous known hosts ==="
                                           
                     '''
-                    dir('ansible/files'){
+                    dir('files'){
                         sh '''
                             bash files/generate_known_hosts.sh
                         '''
