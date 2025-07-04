@@ -45,8 +45,8 @@ pipeline {
             steps {
                 dir('frontend/frontend') {
                    sh '''
-                        mkdir ../build
-                        tar -xzf build/frontend-artifact.tar.gz -C ../build/
+                        mkdir -p ../build
+                        tar -xzf frontend-artifact.tar.gz -C ../build/
                         rm -rf build
                     '''
                 }
