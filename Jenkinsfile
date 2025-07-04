@@ -113,11 +113,12 @@ pipeline {
             }   
         }
         
-        stage {
+        stage ('Ansible') {
             dir('ansible') {
                 dir('files') {
                     sh 'bash generate_inventory.sh'
                 }
+                sh 'ansible all -m ping'
             }
         }
 
