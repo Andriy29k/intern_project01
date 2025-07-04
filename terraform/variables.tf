@@ -68,15 +68,7 @@ variable "ssh_path_over_bastion" {
   type    = string
 }
 
-variable "bastion_public_ip" {
-  type = string
-}
-
-variable "machine_private_ips" {
-  type = map(string)
-}
-
 variable "machines" {
   type    = list(string)
-  default = ["frontend", "backend", "monitoring", "reverse_proxy", "database"]
+  default = ["frontend", "backend", "monitoring"]
 }

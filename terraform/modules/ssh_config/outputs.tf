@@ -1,5 +1,4 @@
 output "ssh_config_summary" {
-  description = "Summary of SSH config entries: machine, IP, user, key file"
   value = concat(
     [
       {
@@ -13,6 +12,20 @@ output "ssh_config_summary" {
       for m in var.machines : {
         machine = m
         ip      = var.machine_private_ips[m]
+        user    = var.ssh_user
+        key     = var.ssh_path_over_bastion
+      }
+    ],
+    [
+      {
+        machine = "reverse_proxy"
+        ip      = var.reverse_proxy_ip
+        user    = var.ssh_user
+        key     = var.ssh_path_over_bastion
+      },
+      {
+        machine = "database"
+        ip      = var.database_ip
         user    = var.ssh_user
         key     = var.ssh_path_over_bastion
       }

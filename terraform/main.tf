@@ -56,23 +56,6 @@ module "compute" {
   ssh_user              = var.ssh_user
 }
 
-module "ssh_config" {
-  source = "./modules/ssh_config"
-
-  bastion_public_ip = module.bastion.bastion_external_ip
-
-  machines = keys(module.compute.all_internal_ips)
-
-  machine_private_ips = module.compute.all_internal_ips
-
-  ssh_user              = var.ssh_user
-  ssh_path_to_bastion   = var.ssh_path_to_bastion
-  ssh_path_over_bastion = var.ssh_path_over_bastion
-
-  depends_on = [module.bastion, module.compute]
-}
-
-
 module "reverse_proxy" {
   source                = "./modules/reverse_proxy"
   project_id            = var.project_id
@@ -97,6 +80,36 @@ module "database" {
   public_subnet_name    = module.network.public_subnet_name
   private_subnet_name   = module.network.private_subnet_name
 }
+
+module "ssh_config" {
+  source = "./modules/ssh_config"
+
+  bastion_public_ip = module.bastion.bastion_external_ip
+
+  machines = concat(
+    keys(module.compute.all_internal_ips),
+    ["reverse_proxy", "database"]
+  )
+
+  machine_private_ips = merge(
+    module.compute.all_internal_ips,
+    {
+      reverse_proxy = module.reverse_proxy.reverse_proxy_internal_ip,
+      database      = module.database.database_internal_ip,
+    }
+  )
+
+  reverse_proxy_ip = module.reverse_proxy.reverse_proxy_internal_ip
+  database_ip      = module.database.database_internal_ip
+
+  ssh_user              = var.ssh_user
+  ssh_path_to_bastion   = var.ssh_path_to_bastion
+  ssh_path_over_bastion = var.ssh_path_over_bastion
+
+  depends_on = [module.bastion, module.compute, module.reverse_proxy, module.database]
+}
+
+
 
 module "storage" {
   source        = "./modules/storage"

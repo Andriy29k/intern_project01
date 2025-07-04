@@ -61,3 +61,4 @@ output "debug_machines" {
 output "debug_machine_ips" {
   value = module.compute.all_internal_ips
 }
+

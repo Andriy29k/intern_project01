@@ -2,6 +2,15 @@ variable "bastion_public_ip" {
   type = string
 }
 
+variable "reverse_proxy_ip" {
+  type = string
+}
+
+variable "database_ip" {
+  type = string
+}
+
+
 variable "machines" {
   type = list(string)
 }
