@@ -56,6 +56,23 @@ module "compute" {
   ssh_user              = var.ssh_user
 }
 
+module "ssh_config" {
+  source = "./modules/ssh_config"
+
+  bastion_public_ip = module.bastion.bastion_external_ip
+  machines          = var.machines
+  machine_private_ips = {
+    for m in var.machines : m => lookup(module.compute.private_ips, m, "unknown")
+  }
+  ssh_user              = var.ssh_user
+  ssh_path_to_bastion   = var.ssh_path_to_bastion
+  ssh_path_over_bastion = var.ssh_path_over_bastion
+
+  depends_on = [module.bastion, module.compute]
+}
+
+
+
 module "reverse_proxy" {
   source                = "./modules/reverse_proxy"
   project_id            = var.project_id
@@ -88,3 +105,5 @@ module "storage" {
   location      = var.region
   storage_class = var.storage_class
 }
+
+
