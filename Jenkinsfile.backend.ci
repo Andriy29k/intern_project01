@@ -80,6 +80,7 @@ pipeline {
                     dir('backend') {
                         dir('backend') {
                             sh '''
+                            rm -rf ../ROOT
                             mkdir -p backend/ROOT
                             unzip -q build/libs/*.war -d ../ROOT
                         '''
@@ -95,11 +96,6 @@ pipeline {
                             docker build -t $DOCKERHUB_USERNAME/$BACKEND_IMAGE_NAME:$IMAGE_TAG ./backend
                             docker push $DOCKERHUB_USERNAME/$BACKEND_IMAGE_NAME:$IMAGE_TAG
                         """
-                    }
-                    dir('backend') {
-                        sh '''
-                            rm -rf ROOT
-                        '''
                     }
                 }
             }
