@@ -13,16 +13,6 @@ pipeline {
                     credentialsId: 'github-credentials'
             }
         }
-        stage('Build Backend') {
-            steps {
-                dir('backend') {
-                    dir('backend'){
-                        sh 'gradle clean build -x test'
-                        sh 'ls -l build/libs'
-                    }
-                }
-            }
-        }
 
         stage ('Ansible') {
             steps {
