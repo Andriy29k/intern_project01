@@ -123,12 +123,12 @@ pipeline {
         stage('Generate SSH Config') {
             steps {
                 dir('ansible/playbooks') {
-                    sh 'ansible-playbook generate_ssh_config.yml'
+                    sh 'ansible-playbook ssh_config.yml'
                 }
             }
         }
 
-        
+
 
         stage('Destroy Infrastructure') {
             steps {
