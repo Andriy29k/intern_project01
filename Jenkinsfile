@@ -146,7 +146,7 @@ pipeline {
                         test -f /var/lib/jenkins/.ssh/id_rsa_bastion || (echo "Bastion key missing" && exit 1)
                         test -f /var/lib/jenkins/.ssh/id_rsa_over_bastion || (echo "Over bastion key missing" && exit 1)
                         echo "=== Deleting previous known hosts ==="
-                        rm ${HOME}/.ssh/known_hosts
+                        bash files/generate_known_hosts.sh
                         echo "Keys found, testing Ansible ping:"
                         ANSIBLE_CONFIG=./ansible.cfg ansible all -i inventory.ini -m ping                  
                     '''
