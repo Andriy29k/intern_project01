@@ -1,6 +1,6 @@
 #!/bin/bash
 
-input="$1"
+input="/var/lib/jenkins/.ssh/config"
 output="$2"
 
 declare -A group_map=(
