@@ -43,6 +43,13 @@ pipeline {
 
         stage('Docker images build') {
             steps {
+                dir('frontend/frontend') {
+                   sh '''
+                        mkdir ../build
+                        tar -xzf build/frontend-artifact.tar.gz -C ../build/
+                        rm -rf build
+                    '''
+                }
                 withCredentials([usernamePassword(
                         credentialsId: 'DOCKERHUB_CREDENTIALS', 
                         usernameVariable: 'DOCKERHUB_USERNAME', 
