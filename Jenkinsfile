@@ -65,24 +65,6 @@ pipeline {
         //     }
         // }
 
-        stage('Deploy Infrastructure') {
-            steps {
-                dir('terraform') {
-                    withCredentials([file(credentialsId: 'TERRAFORM-TFVARS', variable: 'TFVARS_FILE')]) {
-                        withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_CREDENTIALS')]) {
-                            sh """    
-                                terraform init
-                                terraform validate
-                                terraform plan -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
-                                terraform apply -auto-approve -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
-                            """
-                            sh 'ls -la terraform.tfstate'
-                        }
-                    }
-                }
-            }   
-        }
-
         // stage('Upload Artifacts to GCS') {
         //     steps {
         //         script {
@@ -113,13 +95,31 @@ pipeline {
         //     }
         // }
 
-        // stage('Generate Inventory') {
-        //     steps {
-        //         dir('ansible/files') {
-        //             sh 'bash generate_inventory.sh'
-        //         }
-        //     }       
-        // }
+
+        stage('Deploy Infrastructure') {
+            steps {
+                dir('terraform') {
+                    withCredentials([file(credentialsId: 'TERRAFORM-TFVARS', variable: 'TFVARS_FILE')]) {
+                        withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_CREDENTIALS')]) {
+                            sh """    
+                                terraform init
+                                terraform validate
+                                terraform plan -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
+                                terraform apply -auto-approve -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
+                            """
+                        }
+                    }
+                }
+            }   
+        }
+        
+        stage {
+            dir('ansible') {
+                dir('files') {
+                    sh 'bash generate_inventory.sh'
+                }
+            }
+        }
 
         stage('Destroy Infrastructure') {
             steps {
@@ -135,31 +135,6 @@ pipeline {
                 }
             }   
         } 
-
-        // stage('Generate SSH Config') {
-        //     steps {
-        //         dir('ansible/playbooks') {
-        //             sh 'ansible-playbook ssh_config.yml'
-        //         }
-        //     }
-        // }
-
-
-
-        // stage('Destroy Infrastructure') {
-        //     steps {
-        //         input message: 'Are you sure you want to destroy infrastructure?'
-        //         dir('terraform') {
-        //             withCredentials([file(credentialsId: 'TERRAFORM-TFVARS', variable: 'TFVARS_FILE')]) {
-        //                 withCredentials([file(credentialsId: 'GCP_CREDS_JSON', variable: 'GOOGLE_CREDENTIALS')]) {
-        //                     sh """
-        //                        terraform destroy -auto-approve -var "google_credentials_file=${GOOGLE_CREDENTIALS}" -var-file="${TFVARS_FILE}"
-        //                     """
-        //                 }
-        //             }
-        //         }
-        //     }   
-        // } 
 
         // stage('Terraform Lint') {
         //     steps {
