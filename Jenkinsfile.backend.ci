@@ -50,20 +50,6 @@ pipeline {
             }
         }
 
-        stage('Docker images build') {
-            steps {
-                withCredentials([usernamePassword(
-                        credentialsId: 'DOCKERHUB_CREDENTIALS', 
-                        usernameVariable: 'DOCKERHUB_USERNAME', 
-                        passwordVariable: 'DOCKERHUB_PASSWORD'
-                )]) {
-                    sh 'echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin'
-                    sh "docker build -t $DOCKERHUB_USERNAME/$BACKEND_IMAGE_NAME:$IMAGE_TAG ./backend"
-                    sh "docker push $DOCKERHUB_USERNAME/$BACKEND_IMAGE_NAME:$IMAGE_TAG"
-                }
-            }
-        }
-
         stage('Upload Artifacts to GCS') {
             steps {
                 script {
@@ -83,6 +69,28 @@ pipeline {
                                 gsutil cp "\$DB_DUMP_PATH" gs://class-schedule-artifacts/database-artifacts/
                             """
                         }
+                    }
+                }
+            }
+        }
+
+        stage('Backend image build') {
+            steps {
+                script {
+                    sh '''
+                        mkdir -p backend/ROOT
+                        unzip -q backend/build/libs/*.war -d backend/ROOT
+                    '''
+                    withCredentials([usernamePassword(
+                        credentialsId: 'DOCKERHUB_CREDENTIALS',
+                        usernameVariable: 'DOCKERHUB_USERNAME',
+                        passwordVariable: 'DOCKERHUB_PASSWORD'
+                    )]) {
+                        sh """
+                            echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+                            docker build -t $DOCKERHUB_USERNAME/$BACKEND_IMAGE_NAME:$IMAGE_TAG ./backend
+                            docker push $DOCKERHUB_USERNAME/$BACKEND_IMAGE_NAME:$IMAGE_TAG
+                        """
                     }
                 }
             }
