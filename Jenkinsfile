@@ -76,6 +76,7 @@ pipeline {
                                 terraform plan -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
                                 terraform apply -auto-approve -var 'google_credentials_file=$GOOGLE_CREDENTIALS' -var-file="$TFVARS_FILE"
                             """
+                            sh 'ls -la terraform.tfstate'
                         }
                     }
                 }
