@@ -2,8 +2,8 @@
 set -e
 
 # === CONFIG ===
-BASTION_IP=$(jq -r '.bastion_external_ip.value' ../../terraform/terraform_output.json)
-SSH_USER=$(jq -r '.ssh_user.value' ../../terraform/terraform_output.json)
+BASTION_IP=$(jq -r '.bastion_external_ip.value' ../../terraform/tf_outputs.json)
+SSH_USER=$(jq -r '.ssh_user.value' ../../terraform/tf_outputs.json)
 KNOWN_HOSTS="/var/lib/jenkins/.ssh/known_hosts"
 
 # === IP ===
@@ -13,7 +13,7 @@ PRIV_IPS=$(jq -r '[
   .monitoring_internal_ip.value,
   .reverse_proxy_internal_ip.value,
   .database_internal_ip.value
-] | .[]' ../../terraform/terraform_output.json)
+] | .[]' ../../terraform/tf_outputs.json)
 
 # === Clean known_hosts ===
 echo "[INFO] Cleaning known_hosts: $KNOWN_HOSTS"
