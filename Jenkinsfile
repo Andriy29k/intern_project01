@@ -119,7 +119,7 @@ pipeline {
                     dir('files') {
                         sh 'bash generate_inventory.sh'
                     }
-                    sh 'ansible all -m ping'
+                    sh 'ansible all -i inventory.ini -m ping'
                 }
             }
         }
