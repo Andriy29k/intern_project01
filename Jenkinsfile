@@ -112,55 +112,23 @@ pipeline {
         //     }
         // }
 
-        stage('Ansible configuration') {
+        stage('Generate Inventory') {
             steps {
                 dir('ansible/files') {
                     sh 'bash generate_inventory.sh'
                 }
-                dir('ansible') {
-                    sh '''
-                        echo "=== Inventory file content (inventory.ini) ==="
-                        if [ -f inventory.ini ]; then
-                            cat inventory.ini
-                        else
-                            echo "inventory.ini file not found!"
-                            exit 1
-                        fi
-                        echo "============================================="
-                    '''
-                }
+            }       
+        }
+
+        stage('Generate SSH Config') {
+            steps {
                 dir('ansible/playbooks') {
-                    sh 'ansible-playbook -i ../inventory.ini ssh_config.yml'
-                }
-                dir('ansible') {
-                    sh '''
-                        echo "=== Inventory file content ==="
-                        if [ -f inventory.ini ]; then
-                            cat inventory.ini
-                        else
-                            echo "inventory.ini not found!"
-                            exit 1
-                        fi
-
-                        echo "=== Checking SSH keys ==="
-                        test -f /var/lib/jenkins/.ssh/id_rsa_bastion || (echo "Bastion key missing" && exit 1)
-                        test -f /var/lib/jenkins/.ssh/id_rsa_over_bastion || (echo "Over bastion key missing" && exit 1)
-
-                        echo "=== Deleting previous known hosts ==="
-                        rm -f /var/lib/jenkins/.ssh/known_hosts
-
-                        echo "=== Generating known_hosts ==="
-                    '''
-                    dir('files'){
-                        sh 'bash generate_known_hosts.sh'
-                    }
-                    sh '''  
-                        echo "=== Ansible ping ==="
-                        ANSIBLE_CONFIG=./ansible.cfg ansible all -i inventory.ini -m ping
-                    '''
+                    sh 'ansible-playbook generate_ssh_config.yml'
                 }
             }
         }
+
+        
 
         stage('Destroy Infrastructure') {
             steps {

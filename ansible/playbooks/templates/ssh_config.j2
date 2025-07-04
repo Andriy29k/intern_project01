@@ -1,0 +1,9 @@
+Host bastion
+    HostName {{ bastion_ip }}
+    User {{ ssh_user }}
+    IdentityFile {{ bastion_key }}
+
+Host *
+    User {{ ssh_user }}
+    IdentityFile {{ over_bastion_key }}
+    ProxyJump bastion
