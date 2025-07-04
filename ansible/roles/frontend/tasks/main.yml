@@ -15,7 +15,7 @@
     name: "{{ docker_image }}"
     source: pull
 
-- name: Run frontend container
+- name: Run or update frontend container
   community.docker.docker_container:
     name: "{{ docker_container_name }}"
     image: "{{ docker_image }}"
@@ -25,3 +25,4 @@
       - "{{ host_port }}:{{ container_port }}"
     env:
       BACKEND_IP: "{{ backend_ip }}"
+    recreate: yes 
