@@ -96,6 +96,11 @@ pipeline {
                             docker push $DOCKERHUB_USERNAME/$BACKEND_IMAGE_NAME:$IMAGE_TAG
                         """
                     }
+                    dir('backend') {
+                        sh '''
+                            rm -rf ROOT
+                        '''
+                    }
                 }
             }
         }
