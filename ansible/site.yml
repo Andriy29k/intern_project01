@@ -1,0 +1,4 @@
+- hosts: frontend
+  become: true
+  roles:
+    - frontend

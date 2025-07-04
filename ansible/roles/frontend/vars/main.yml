@@ -1,0 +1,5 @@
+docker_image: andriy29k/frontend-app
+docker_container_name: frontend
+backend_ip: 10.0.2.5
+container_port: 3000
+host_port: 3000

@@ -27,10 +27,9 @@ pipeline {
         stage ('Ansible') {
             steps {
                 dir('ansible') {
-                    // dir('files') {
-                    //     sh 'bash generate_inventory.sh'
-                    // }
                     sh 'ansible all -i inventory.ini -m ping'
+                    sh 'ansible-galaxy collection install community.docker'
+                    sh 'ansible-playbook -i inventory.ini site.yml'
                 }
             }
         }
