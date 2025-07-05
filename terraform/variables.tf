@@ -72,3 +72,11 @@ variable "machines" {
   type    = list(string)
   default = ["frontend", "backend", "monitoring"]
 }
+
+variable "ssh_path_to_bastion_private" {
+  type = string
+}
+
+variable "ssh_path_over_bastion_private" {
+  type = string
+}

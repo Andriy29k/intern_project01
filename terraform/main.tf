@@ -102,9 +102,9 @@ module "ssh_config" {
   reverse_proxy_ip = module.reverse_proxy.reverse_proxy_internal_ip
   database_ip      = module.database.database_internal_ip
 
-  ssh_user              = var.ssh_user
-  ssh_path_to_bastion   = var.ssh_path_to_bastion
-  ssh_path_over_bastion = var.ssh_path_over_bastion
+  ssh_user                      = var.ssh_user
+  ssh_path_to_bastion_private   = var.ssh_path_to_bastion_private
+  ssh_path_over_bastion_private = var.ssh_path_over_bastion_private
 
   depends_on = [module.bastion, module.compute, module.reverse_proxy, module.database]
 }

@@ -54,6 +54,14 @@ output "ssh_path_over_bastion" {
   value = var.ssh_path_over_bastion
 }
 
+output "ssh_path_to_bastion_private" {
+  value = var.ssh_path_to_bastion_private
+}
+
+output "ssh_path_over_bastion_private" {
+  value = var.ssh_path_over_bastion_private
+}
+
 output "debug_machines" {
   value = keys(module.compute.all_internal_ips)
 }
