@@ -13,9 +13,9 @@
 - name: Ensure correct permissions on GCP key
   file:
     path: "{{ gcp_key_dest }}"
+    owner: "{{ ansible_user | default('root') }}"
+    group: "{{ ansible_user | default('root') }}"
     mode: '0600'
-    owner: root
-    group: root
 
 - name: Copy GCP service account key
   copy:
