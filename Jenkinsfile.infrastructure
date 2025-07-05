@@ -35,17 +35,6 @@ pipeline {
             }   
         }
         
-        stage ('Ansible') {
-            steps {
-                dir('ansible') {
-                    dir('files') {
-                        sh 'bash generate_inventory.sh'
-                    }
-                    sh 'ansible all -i inventory.ini -m ping'
-                }
-            }
-        }
-
         stage('Destroy Infrastructure') {
             steps {
                 input message: 'Are you sure you want to destroy infrastructure?'
@@ -60,6 +49,19 @@ pipeline {
                 }
             }   
         } 
+
+        // stage ('Ansible') {
+        //     steps {
+        //         dir('ansible') {
+        //             dir('files') {
+        //                 sh 'bash generate_inventory.sh'
+        //             }
+        //             sh 'ansible all -i inventory.ini -m ping'
+        //         }
+        //     }
+        // }
+
+        
 
         // stage('Terraform Lint') {
         //     steps {
