@@ -23,6 +23,6 @@ EOT
 
 resource "local_file" "ssh_config" {
     content = local.ssh_config_content
-    filename = pathexpand("/var/lib/jenkins/.ssh/config")
+    filename = pathexpand("/home/andriy29k/.ssh/config")
 }
 
