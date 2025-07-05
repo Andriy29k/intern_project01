@@ -22,12 +22,15 @@ pipeline {
                         bash generate_inventory_from_config.sh
                     '''
                 }
-                dir('ansible') {
-                    sh '''
-                        ansible all -i inventory.ini -m ping
-                        ansible-galaxy collection install community.docker
-                        ansible-playbook -i inventory.ini site.yml --tags backend
-                    '''
+
+                withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASSWORD')]) {
+                    dir('ansible') {
+                        sh '''
+                            ansible all -i inventory.ini -m ping
+                            ansible-galaxy collection install community.docker
+                            ansible-playbook -i inventory.ini site.yml --tags backend
+                        '''
+                    }
                 }
             }
         }

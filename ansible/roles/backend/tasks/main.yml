@@ -12,6 +12,11 @@
     enabled: true
   become: true
 
+- name: Log in to Docker Hub
+  community.docker.docker_login:
+    username: "{{ docker_username }}"
+    password: "{{ docker_password }}"
+
 - name: Pull backend Docker image
   community.docker.docker_image:
     name: "{{ backend_image }}"
