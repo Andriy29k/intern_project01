@@ -4,7 +4,13 @@
     - frontend
 
 - hosts: reverse_proxy
-  become: yes
+  become: true
   roles:
     - reverse_proxy
+
+- hosts: database
+  become: true
+  roles:
+    - database
+
 
