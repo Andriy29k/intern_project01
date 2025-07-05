@@ -4,7 +4,7 @@ locals {
 Host bastion
     HostName ${var.bastion_public_ip}
     User ${var.ssh_user}
-    IdentityFile ${var.ssh_path_to_bastion}
+    IdentityFile ${var.ssh_path_to_bastion_private}
     ForwardAgent yes
     StrictHostKeyChecking no
 
@@ -15,7 +15,7 @@ ${join("\n", [
     machine,
     var.machine_private_ips[machine],
     var.ssh_user,
-    var.ssh_path_over_bastion
+    var.ssh_path_over_bastion_private
   )
 ])}
 EOT

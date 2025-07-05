@@ -5,7 +5,7 @@ output "ssh_config_summary" {
         machine = "bastion"
         ip      = var.bastion_public_ip
         user    = var.ssh_user
-        key     = var.ssh_path_to_bastion
+        key     = var.ssh_path_to_bastion_private
       }
     ],
     [
@@ -13,7 +13,7 @@ output "ssh_config_summary" {
         machine = m
         ip      = var.machine_private_ips[m]
         user    = var.ssh_user
-        key     = var.ssh_path_over_bastion
+        key     = var.ssh_path_over_bastion_private
       }
     ],
     [
@@ -21,13 +21,13 @@ output "ssh_config_summary" {
         machine = "reverse_proxy"
         ip      = var.reverse_proxy_ip
         user    = var.ssh_user
-        key     = var.ssh_path_over_bastion
+        key     = var.ssh_path_over_bastion_private
       },
       {
         machine = "database"
         ip      = var.database_ip
         user    = var.ssh_user
-        key     = var.ssh_path_over_bastion
+        key     = var.ssh_path_over_bastion_private
       }
     ]
   )

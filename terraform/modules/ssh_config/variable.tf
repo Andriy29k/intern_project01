@@ -23,10 +23,10 @@ variable "ssh_user" {
   type = string
 }
 
-variable "ssh_path_to_bastion" {
+variable "ssh_path_to_bastion_private" {
   type = string
 }
 
-variable "ssh_path_over_bastion" {
+variable "ssh_path_over_bastion_private" {
   type = string
 }
