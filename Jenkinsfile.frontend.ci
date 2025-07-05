@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent {label 'Linux'}
 
     environment {
         GITHUB_URL="https://github.com/Andriy29k/intern_project01.git"
