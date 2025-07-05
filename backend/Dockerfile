@@ -1,12 +1,5 @@
 FROM eclipse-temurin:11-jre-alpine AS deploy
 
-ENV \
-DATABASE_TOKEN=DATABASE_TOKEN \
-DATABASE_NAME=DATABASE_NAME \
-DATABASE_USER=DATABASE_USER \
-DATABASE_PASSWORD=DATABASE_PASSWORD \
-REDIS_TOKEN=REDIS_TOKEN
-
 RUN apk add --no-cache curl && \
     mkdir -p /opt && \
     curl -sSL https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.85/bin/apache-tomcat-9.0.85.tar.gz -o /tmp/tomcat.tar.gz && \

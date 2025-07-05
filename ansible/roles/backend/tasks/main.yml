@@ -12,16 +12,6 @@
     enabled: true
   become: true
 
-- name: Log in to Docker Hub
-  community.docker.docker_login:
-    username: "{{ docker_username }}"
-    password: "{{ docker_password }}"
-
-- name: Pull backend Docker image
-  community.docker.docker_image:
-    name: "{{ backend_image }}"
-    source: pull
-
 - name: Stop backend container if running
   community.docker.docker_container:
     name: backend
@@ -34,6 +24,22 @@
     state: absent
   ignore_errors: true
 
+- name: Remove old backend image if exists
+  community.docker.docker_image:
+    name: "{{ backend_image }}"
+    state: absent
+  ignore_errors: true
+
+- name: Log in to Docker Hub
+  community.docker.docker_login:
+    username: "{{ docker_username }}"
+    password: "{{ docker_password }}"
+
+- name: Pull backend Docker image
+  community.docker.docker_image:
+    name: "{{ backend_image }}"
+    source: pull
+
 - name: Run backend container
   community.docker.docker_container:
     name: backend
@@ -41,8 +47,10 @@
     state: started
     restart_policy: always
     env:
-      DATABASE_URL: "{{ database_url }}"
+      DB_ENDPOINT_TOKEN: "{{ database_url }}"
+      DB_NAME_TOKEN: "class_schedule"
+      DB_USERNAME_TOKEN: "database_admin"
+      DB_USERPASSWORD_TOKEN: "admin"
       REDIS_URL: "{{ redis_url }}"
-      OTHER_ENV_VAR: "value"
     ports:
       - "8080:8080"
