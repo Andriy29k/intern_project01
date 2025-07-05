@@ -2,3 +2,9 @@
   become: true
   roles:
     - frontend
+
+- hosts: reverse_proxy
+  become: yes
+  roles:
+    - reverse_proxy
+

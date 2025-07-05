@@ -1,0 +1,2 @@
+frontend_private_ip: 10.0.2.4
+backend_private_ip: 10.0.2.5
