@@ -1,0 +1,40 @@
+- name: Ensure Docker is installed
+  ansible.builtin.package:
+    name: docker
+    state: present
+
+- name: Ensure Docker service is running
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Pull backend Docker image
+  community.docker.docker_image:
+    name: "{{ backend_image }}"
+    source: pull
+
+- name: Stop backend container if running
+  community.docker.docker_container:
+    name: backend
+    state: stopped
+  ignore_errors: true
+
+- name: Remove backend container if exists
+  community.docker.docker_container:
+    name: backend
+    state: absent
+  ignore_errors: true
+
+- name: Run backend container
+  community.docker.docker_container:
+    name: backend
+    image: "{{ backend_image }}"
+    state: started
+    restart_policy: always
+    env:
+      DATABASE_URL: "{{ database_url }}"
+      REDIS_URL: "{{ redis_url }}"
+      OTHER_ENV_VAR: "value"
+    ports:
+      - "8080:8080"

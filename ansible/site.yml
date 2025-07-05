@@ -1,16 +1,28 @@
 - hosts: frontend
   become: true
   roles:
-    - frontend
+    - role: frontend
+      tags: frontend
 
 - hosts: reverse_proxy
   become: true
   roles:
-    - reverse_proxy
+    - role: reverse_proxy
+      tags: reverse_proxy
 
 - hosts: database
   become: true
   roles:
-    - database
+    - role: database
+      tags: database
+
+- hosts: backend
+  become: true
+  vars:
+    database_ip: 10.0.2.5 
+  roles:
+    - role: backend
+      tags: backend
+
 
 
