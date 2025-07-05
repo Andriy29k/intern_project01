@@ -1,13 +1,16 @@
 - name: Ensure Docker is installed
-  ansible.builtin.package:
-    name: docker
+  apt:
+    name: docker.io
     state: present
+    update_cache: true
+  become: true
 
-- name: Ensure Docker service is running
-  ansible.builtin.service:
+- name: Ensure Docker service is running and enabled
+  systemd:
     name: docker
     state: started
     enabled: true
+  become: true
 
 - name: Pull backend Docker image
   community.docker.docker_image:
