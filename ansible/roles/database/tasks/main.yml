@@ -1,13 +1,21 @@
 - name: Ensure /opt/keys exists
   file:
-    path: /tmp/key
+    path: /opt/keys
     state: directory
     mode: '0755'
+
+- name: Copy GCP service account key
+  copy:
+    src: "{{ gcp_key_src }}"
+    dest: "{{ gcp_key_dest }}"
+    mode: '0600'
 
 - name: Ensure correct permissions on GCP key
   file:
     path: "{{ gcp_key_dest }}"
-    mode: '0644'
+    mode: '0600'
+    owner: root
+    group: root
 
 - name: Copy GCP service account key
   copy:
