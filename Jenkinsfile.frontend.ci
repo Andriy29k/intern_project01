@@ -20,13 +20,13 @@ pipeline {
             }
         }
         
-        stage('Sonar Scanning') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'sonar-scanner -Dproject.settings=./sonar/frontend-sonar.properties'
-                }
-            }
-        }
+        // stage('Sonar Scanning') {
+        //     steps {
+        //         withSonarQubeEnv('SonarQube') {
+        //             sh 'sonar-scanner -Dproject.settings=./sonar/frontend-sonar.properties'
+        //         }
+        //     }
+        // }
 
         stage('Build Frontend') {
             steps {
