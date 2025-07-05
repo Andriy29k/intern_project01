@@ -4,7 +4,6 @@ pipeline {
     environment {
         GITHUB_URL="https://github.com/Andriy29k/intern_project01.git"
         BACKEND_IMAGE_NAME = 'class_schedule_backend'
-        FRONTEND_IMAGE_NAME = 'class_schedule_frontend'
         IMAGE_TAG = 'latest'
     }
 
