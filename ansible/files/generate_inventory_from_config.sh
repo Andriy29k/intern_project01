@@ -1,6 +1,6 @@
 #!/bin/bash
 
-input="/var/lib/jenkins/.ssh/config"
+input="/home/andriy29k/.ssh/config"
 output="../inventory.ini"
 
 declare -A group_map=(
