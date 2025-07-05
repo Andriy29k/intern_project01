@@ -1,3 +1,17 @@
+- name: Ensure Docker is installed
+  apt:
+    name: docker.io
+    state: present
+    update_cache: true
+  become: true
+
+- name: Ensure Docker service is running and enabled
+  systemd:
+    name: docker
+    state: started
+    enabled: true
+  become: true
+
 - name: Stop frontend container if running
   community.docker.docker_container:
     name: "{{ docker_container_name }}"
