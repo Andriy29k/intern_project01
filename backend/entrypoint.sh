@@ -10,10 +10,10 @@ set -e
 # ==== HIBERNATE CONFIG ====
 for file in $(find /opt/tomcat/webapps/ROOT/WEB-INF/classes/ -name "hibernate.properties"); do
   sed -i \
-    -e "s|postgres:5432/DATABASE|${DB_HOST}:${DB_PORT}/${DB_NAME}|g" \
-    -e "s|USERNAME|${DB_USER}|g" \
-    -e "s|USERPASSWORD|${DB_PASSWORD}|g" \
-    "$file"
+    -e "s|jdbc:postgresql://[^:]*:[0-9]*/[A-Z_]*|${DB_ENDPOINT_TOKEN}|g" \
+    -e "s|USERNAME|${DB_USERNAME_TOKEN}|g" \
+    -e "s|USERPASSWORD|${DB_USERPASSWORD_TOKEN}|g" \
+  "$file"
 done
 
 # ==== CACHE CONFIG ====

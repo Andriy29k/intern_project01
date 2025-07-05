@@ -48,9 +48,9 @@
     restart_policy: always
     env:
       DB_ENDPOINT_TOKEN: "{{ database_url }}"
-      DB_NAME_TOKEN: "class_schedule"
-      DB_USERNAME_TOKEN: "database_admin"
-      DB_USERPASSWORD_TOKEN: "admin"
+      DB_USERNAME_TOKEN: "{{ db_username_token }}"
+      DB_USERPASSWORD_TOKEN: "{{ db_userpassword_token }}"
       REDIS_URL: "{{ redis_url }}"
+
     ports:
       - "8080:8080"

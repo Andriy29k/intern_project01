@@ -8,3 +8,6 @@ backend_ports:
 
 docker_username: "andriy29k"
 docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
+
+db_username_token: "database_admin"
+db_userpassword_token: "admin"
