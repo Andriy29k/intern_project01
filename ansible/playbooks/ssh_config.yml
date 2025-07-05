@@ -4,8 +4,8 @@
   vars:
     bastion_ip: "{{ lookup('file', '../../terraform/tf_outputs.json') | from_json | json_query('bastion_external_ip.value') }}"
     ssh_user: "{{ lookup('file', '../../terraform/tf_outputs.json') | from_json | json_query('ssh_user.value') }}"
-    bastion_key: "/var/lib/jenkins/.ssh/id_rsa_bastion"
-    over_bastion_key: "/var/lib/jenkins/.ssh/id_rsa_over_bastion"
+    bastion_key: "/home/andriy29k/.ssh/id_rsa_bastion"
+    over_bastion_key: "/home/andriy29k/.ssh/id_rsa_over_bastion"
     inventory_path: "../inventory.ini"
     ansible_cfg: "./ansible.cfg"
     groups_to_ping:
@@ -20,7 +20,7 @@
     - name: Create SSH config from template
       template:
         src: templates/ssh_config.j2
-        dest: /var/lib/jenkins/.ssh/config
+        dest: /home/andriy29k/.ssh/config
         mode: '0600'
 
     - name: Ping groups sequentially
