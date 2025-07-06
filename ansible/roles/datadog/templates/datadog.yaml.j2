@@ -1,0 +1,12 @@
+api_key: {{ datadog_api_key }}
+site: datadoghq.com
+logs_enabled: true
+logs_config:
+  container_collect_all: true
+
+listeners:
+  - name: dogstatsd
+    port: 8125
+
+process_config:
+  enabled: "true"

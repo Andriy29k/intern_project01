@@ -1,0 +1,32 @@
+---
+- name: Check if Datadog agent is installed
+  shell: datadog-agent status
+  register: datadog_agent_status
+  ignore_errors: true
+  changed_when: false
+
+- name: Install Datadog agent if not installed
+  apt:
+    name: datadog-agent
+    state: present
+    update_cache: true
+  when: datadog_agent_status.failed
+  become: true
+
+- name: Deploy datadog.yaml configuration file
+  template:
+    src: datadog.yaml.j2
+    dest: /etc/datadog-agent/datadog.yaml
+    owner: dd-agent
+    group: dd-agent
+    mode: '0640'
+  notify:
+    - Restart Datadog agent
+  become: true
+
+- name: Ensure Datadog agent is running and enabled
+  systemd:
+    name: datadog-agent
+    state: started
+    enabled: true
+  become: true

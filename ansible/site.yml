@@ -36,5 +36,8 @@
     - role: monitoring
       tags: monitoring
 
-
-
+- hosts: monitoring
+  vars:
+    datadog_api_key: "{{ datadog_api_key }}"
+  roles:
+    - datadog
