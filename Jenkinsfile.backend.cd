@@ -14,26 +14,26 @@ pipeline {
             }
         }
 
-        stage ('Ansible Backend Configuration') {
-            steps {
-                dir('ansible/files') {
-                    sh '''
-                        chmod +x generate_inventory_from_config.sh
-                        bash generate_inventory_from_config.sh
-                    '''
-                }
+        // stage ('Ansible Backend Configuration') {
+        //     steps {
+        //         dir('ansible/files') {
+        //             sh '''
+        //                 chmod +x generate_inventory_from_config.sh
+        //                 bash generate_inventory_from_config.sh
+        //             '''
+        //         }
 
-                withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASSWORD')]) {
-                    dir('ansible') {
-                        sh '''
-                            ansible all -i inventory.ini -m ping
-                            ansible-galaxy collection install community.docker
-                            ansible-playbook -i inventory.ini site.yml --tags database,backend
-                        '''
-                    }
-                }
-            }
-        }
+        //         withCredentials([string(credentialsId: 'dockerhub-password', variable: 'DOCKER_PASSWORD')]) {
+        //             dir('ansible') {
+        //                 sh '''
+        //                     ansible all -i inventory.ini -m ping
+        //                     ansible-galaxy collection install community.docker
+        //                     ansible-playbook -i inventory.ini site.yml --tags database,backend
+        //                 '''
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Monitoring Configuration') {
             steps {

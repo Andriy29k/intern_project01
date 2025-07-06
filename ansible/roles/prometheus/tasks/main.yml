@@ -1,4 +1,4 @@
-- name: Check if Prometheus is already installed
+- name: Check if Prometheus is installed
   shell: dpkg -s prometheus
   register: prometheus_installed
   failed_when: false
@@ -13,21 +13,32 @@
   when: prometheus_installed.rc != 0
   become: true
 
-- name: Create config directory if it doesn't exist
+- name: Ensure /etc/prometheus directory exists
   file:
     path: /etc/prometheus
     state: directory
     mode: '0755'
   become: true
 
-- name: Deploy Prometheus config only if changed
+- name: Deploy prometheus.yml config only if changed
   template:
     src: prometheus.yml.j2
     dest: /etc/prometheus/prometheus.yml
-    owner: root
-    group: root
     mode: '0644'
-  notify: Restart Prometheus
+  register: prometheus_config
+  notify:
+    - Reload Prometheus
+  become: true
+
+- name: Deploy prometheus.service systemd unit only if changed
+  template:
+    src: prometheus.service.j2
+    dest: /etc/systemd/system/prometheus.service
+    mode: '0644'
+  register: prometheus_service
+  notify:
+    - Reload systemd
+    - Restart Prometheus
   become: true
 
 - name: Ensure Prometheus service is enabled and running
@@ -36,3 +47,5 @@
     state: started
     enabled: true
   become: true
+
+
