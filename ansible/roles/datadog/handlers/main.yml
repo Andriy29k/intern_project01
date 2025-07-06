@@ -3,4 +3,5 @@
   systemd:
     name: datadog-agent
     state: restarted
+    enabled: true
   become: true

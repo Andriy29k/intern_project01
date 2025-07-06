@@ -5,7 +5,7 @@
   ignore_errors: true
   changed_when: false
 
-- name: Install apt transport dependencies
+- name: Ensure apt-transport-https is installed
   apt:
     name: apt-transport-https
     state: present
@@ -13,14 +13,14 @@
   become: true
   when: datadog_agent_exists.rc != 0
 
-- name: Add Datadog apt key
+- name: Add Datadog APT GPG key
   apt_key:
     url: https://keys.datadoghq.com/DATADOG_APT_KEY.public
     state: present
   become: true
   when: datadog_agent_exists.rc != 0
 
-- name: Add Datadog repository
+- name: Add Datadog APT repository
   apt_repository:
     repo: "deb https://apt.datadoghq.com/ stable 7"
     state: present
@@ -36,7 +36,16 @@
   become: true
   when: datadog_agent_exists.rc != 0
 
-- name: Deploy datadog.yaml configuration file
+- name: Ensure config directory exists
+  file:
+    path: /etc/datadog-agent
+    state: directory
+    owner: dd-agent
+    group: dd-agent
+    mode: '0755'
+  become: true
+
+- name: Deploy datadog.yaml config
   template:
     src: datadog.yaml.j2
     dest: /etc/datadog-agent/datadog.yaml
@@ -47,7 +56,7 @@
     - Restart Datadog agent
   become: true
 
-- name: Ensure Datadog agent is running and enabled
+- name: Ensure Datadog agent service is running and enabled
   systemd:
     name: datadog-agent
     state: started
