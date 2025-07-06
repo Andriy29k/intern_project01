@@ -43,9 +43,12 @@ pipeline {
                     '''
                 }
                 dir('prometheus') {
-                        sh 'docker run -d --name prometheus -p 9090:9090 \
-                        -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml:ro \
-                        prom/prometheus:latest'
+                        sh '''
+                            docker rm -f prometheus
+                            docker run -d --name prometheus -p 9090:9090 \
+                            -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml:ro \
+                            prom/prometheus:latest
+                        '''
                 }
             }
         }
