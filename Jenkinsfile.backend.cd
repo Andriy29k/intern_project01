@@ -28,7 +28,7 @@ pipeline {
                         sh '''
                             ansible all -i inventory.ini -m ping
                             ansible-galaxy collection install community.docker
-                            ansible-playbook -i inventory.ini site.yml --tags backend
+                            ansible-playbook -i inventory.ini site.yml --tags backend,database
                         '''
                     }
                 }
