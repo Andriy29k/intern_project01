@@ -30,4 +30,11 @@
   roles:
     - node_exporter
 
+- hosts: monitoring
+  become: true
+  roles:
+    - role: prometheus
+      tags: prometheus
+
+
 

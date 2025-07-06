@@ -38,7 +38,11 @@ pipeline {
         stage('Monitoring Configuration') {
             steps {
                 dir('ansible') {
-                   sh' ansible-playbook -i inventory.ini site.yml --tags node_exporter'
+                    sh '''
+                        ansible-playbook -i inventory.ini site.yml --tags node_exporter
+                        ansible-playbook -i inventory.ini site.yml --tags monitoring
+
+                    '''
                 }
             }
         }
