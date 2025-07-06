@@ -47,7 +47,7 @@ pipeline {
                     withCredentials([string(credentialsId: 'DATADOG_API_KEY', variable: 'DATADOG_API_KEY')]){
                         sh '''
                             ansible-galaxy collection install datadog.dd
-                            ansible-playbook -i inventory.ini site.yml --tags datadog -e datadog_api_key=$DATADOG_API_KEY -vvv
+                            ansible-playbook -i inventory.ini site.yml --tags datadog -e datadog_api_key=$DATADOG_API_KEY
                         '''
                     }
                 }

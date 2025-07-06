@@ -1,22 +1,19 @@
-- name: Check if Datadog agent is installed
-  command: which datadog-agent
-  register: datadog_agent_check
-  ignore_errors: yes
-  changed_when: false
+- name: Ensure datadog.yaml with API key exists
+  become: true
+  copy:
+    dest: /etc/datadog-agent/datadog.yaml
+    content: |
+      api_key: "{{ datadog_api_key }}"
+      logs_enabled: true
+      apm_config:
+        enabled: true
+  notify: Restart datadog-agent
+  tags: datadog
 
-- name: Show message if Datadog agent is not installed
-  debug:
-    msg: "Datadog agent NOT installed"
-  when: datadog_agent_check.rc != 0
-
-- name: Check Datadog agent status
-  command: datadog-agent status
-  register: datadog_agent_status
-  failed_when: datadog_agent_status.rc != 0
-  changed_when: false
-  when: datadog_agent_check.rc == 0
-
-- name: Show Datadog agent status output
-  debug:
-    var: datadog_agent_status.stdout
-  when: datadog_agent_check.rc == 0
+- name: Start and enable Datadog Agent
+  become: true
+  systemd:
+    name: datadog-agent
+    state: started
+    enabled: true
+  tags: datadog
