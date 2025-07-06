@@ -47,7 +47,7 @@ pipeline {
                 dir('ansible') {
                     withCredentials([string(credentialsId: 'DATADOG_API_KEY', variable: 'DATADOG_API_KEY')]){
                         sh '''
-                            ansible-playbook -i inventory.ini monitoring.yml -e "datadog_api_key=$DATADOG_API_KEY"
+                            ansible-playbook -i inventory.ini site.yml --tags datadog -e datadog_api_key=$DATADOG_API_KEY
                         '''
                     }
                 }
