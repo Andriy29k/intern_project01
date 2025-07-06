@@ -10,7 +10,8 @@ set -e
 # ==== HIBERNATE CONFIG ====
 for file in $(find /opt/tomcat/webapps/ROOT/WEB-INF/classes/ -name "hibernate.properties"); do
   sed -i \
-    -e "s|^hibernate.connection.url=.*|hibernate.connection.url=jdbc:postgresql://${DB_ENDPOINT_TOKEN}:5432/${DB_NAME_TOKEN}|" \
+    -e "s|jdbc:postgresql://[^:/]*|jdbc:postgresql://${DB_ENDPOINT_TOKEN}|" \
+    -e "s|:[0-9]*/[^ ]*|:5432/${DB_NAME_TOKEN}|" \
     -e "s|USERNAME|${DB_USERNAME_TOKEN}|g" \
     -e "s|USERPASSWORD|${DB_USERPASSWORD_TOKEN}|g" \
   "$file"
