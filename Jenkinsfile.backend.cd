@@ -39,7 +39,6 @@ pipeline {
             steps {
                 dir('ansible') {
                     sh '''
-                        ansible-galaxy collection install datadog.dd
                         ansible-playbook -i inventory.ini site.yml --tags node_exporter,monitoring                 
 
                     '''
@@ -47,6 +46,7 @@ pipeline {
                 dir('ansible') {
                     withCredentials([string(credentialsId: 'DATADOG_API_KEY', variable: 'DATADOG_API_KEY')]){
                         sh '''
+                            ansible-galaxy collection install datadog.dd
                             ansible-playbook -i inventory.ini site.yml --tags datadog -e datadog_api_key=$DATADOG_API_KEY
                         '''
                     }

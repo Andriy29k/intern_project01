@@ -1,10 +1,11 @@
 api_key: {{ datadog_api_key }}
+
+logs_enabled: true
+logs_config:
+  container_collect_all: true
+
 site: datadoghq.com
 
 tags:
   - env:prod
-  - role:{{ inventory_hostname }}
-
-logs_enabled: true
-process_config:
-  enabled: true
+  - role:{{ ansible_hostname }}
