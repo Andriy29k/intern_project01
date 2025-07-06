@@ -12,6 +12,32 @@
     enabled: true
   become: true
 
+- name: Create backend Docker network if not exists
+  community.docker.docker_network:
+    name: backend
+    state: present
+
+- name: Stop redis container if running
+  community.docker.docker_container:
+    name: redis
+    state: stopped
+  ignore_errors: true
+
+- name: Remove redis container if exists
+  community.docker.docker_container:
+    name: redis
+    state: absent
+  ignore_errors: true
+
+- name: Run Redis container
+  community.docker.docker_container:
+    name: redis
+    image: redis:7-alpine
+    state: started
+    restart_policy: always
+    networks:
+      - name: backend
+
 - name: Stop backend container if running
   community.docker.docker_container:
     name: backend
@@ -46,12 +72,13 @@
     image: "{{ backend_image }}"
     state: started
     restart_policy: always
+    networks:
+      - name: backend
     env:
       DB_ENDPOINT_TOKEN: "{{ database_url }}"
       DB_NAME_TOKEN: "{{ database_name }}"
       DB_USERNAME_TOKEN: "{{ db_username_token }}"
       DB_USERPASSWORD_TOKEN: "{{ db_userpassword_token }}"
-      REDIS_URL: "{{ redis_url }}"
-
+      REDIS_URL: "redis://redis:6379"
     ports:
       - "8080:8080"
