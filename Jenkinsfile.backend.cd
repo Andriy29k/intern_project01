@@ -40,9 +40,13 @@ pipeline {
                 dir('ansible') {
                     sh '''
                         ansible-playbook -i inventory.ini site.yml --tags node_exporter
-                        ansible-playbook -i inventory.ini site.yml --tags monitoring
-
                     '''
+                }
+                dir('prometheus') {
+                        sh 'docker run -d --name prometheus -p 9090:9090 \
+                        -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml:ro \
+                        prom/prometheus:latest
+                    '
                 }
             }
         }
