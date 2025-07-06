@@ -25,5 +25,9 @@
     - role: backend
       tags: backend
 
+- hosts: all
+  become: true
+  roles:
+    - node_exporter
 
 

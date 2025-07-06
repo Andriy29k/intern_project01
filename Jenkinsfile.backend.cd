@@ -14,7 +14,7 @@ pipeline {
             }
         }
 
-        stage ('Ansible') {
+        stage ('Ansible Backend Configuration') {
             steps {
                 dir('ansible/files') {
                     sh '''
@@ -34,5 +34,14 @@ pipeline {
                 }
             }
         }
+
+        stage('Monitoring Configuration') {
+            steps {
+                dir('ansible') {
+                    ansible-playbook -i inventory.ini site.yml --tags node_exporter
+                }
+            }
+        }
+        //dd=e2dd0eb906eca6d0bf9f5e91425f748f
     }
 }
