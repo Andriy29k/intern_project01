@@ -1,56 +1,22 @@
----
 - name: Check if Datadog agent is installed
   command: which datadog-agent
-  register: datadog_agent_exists
-  ignore_errors: true
+  register: datadog_agent_check
+  ignore_errors: yes
   changed_when: false
 
-- name: Install apt transport dependencies
-  apt:
-    name: apt-transport-https,ca-certificates,curl
-    state: present
-    update_cache: true
-  become: true
-  when: datadog_agent_exists.rc != 0
+- name: Show message if Datadog agent is not installed
+  debug:
+    msg: "Datadog agent NOT installed"
+  when: datadog_agent_check.rc != 0
 
-- name: Add Datadog apt key
-  apt_key:
-    url: https://keys.datadoghq.com/DATADOG_APT_KEY.public
-    state: present
-  become: true
-  when: datadog_agent_exists.rc != 0
+- name: Check Datadog agent status
+  command: datadog-agent status
+  register: datadog_agent_status
+  failed_when: datadog_agent_status.rc != 0
+  changed_when: false
+  when: datadog_agent_check.rc == 0
 
-- name: Add Datadog repository
-  apt_repository:
-    repo: "deb https://apt.datadoghq.com/ stable 7"
-    state: present
-    filename: datadog
-  become: true
-  when: datadog_agent_exists.rc != 0
-
-- name: Install Datadog agent
-  apt:
-    name: datadog-agent
-    state: present
-    update_cache: true
-  become: true
-  when: datadog_agent_exists.rc != 0
-
-- name: Deploy datadog.yaml configuration file
-  template:
-    src: datadog.yaml.j2
-    dest: /etc/datadog-agent/datadog.yaml
-    owner: dd-agent
-    group: dd-agent
-    mode: '0640'
-  notify:
-    - Restart Datadog agent
-  become: true
-
-- name: Ensure Datadog agent is running and enabled
-  systemd:
-    name: datadog-agent
-    state: started
-    enabled: true
-  become: true
-  
+- name: Show Datadog agent status output
+  debug:
+    var: datadog_agent_status.stdout
+  when: datadog_agent_check.rc == 0
