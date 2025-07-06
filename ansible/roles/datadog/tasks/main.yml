@@ -1,17 +1,40 @@
 ---
 - name: Check if Datadog agent is installed
-  shell: datadog-agent status
-  register: datadog_agent_status
+  command: which datadog-agent
+  register: datadog_agent_exists
   ignore_errors: true
   changed_when: false
 
-- name: Install Datadog agent if not installed
+- name: Install apt transport dependencies
+  apt:
+    name: apt-transport-https
+    state: present
+    update_cache: true
+  become: true
+  when: datadog_agent_exists.rc != 0
+
+- name: Add Datadog apt key
+  apt_key:
+    url: https://keys.datadoghq.com/DATADOG_APT_KEY.public
+    state: present
+  become: true
+  when: datadog_agent_exists.rc != 0
+
+- name: Add Datadog repository
+  apt_repository:
+    repo: "deb https://apt.datadoghq.com/ stable 7"
+    state: present
+    filename: datadog
+  become: true
+  when: datadog_agent_exists.rc != 0
+
+- name: Install Datadog agent
   apt:
     name: datadog-agent
     state: present
     update_cache: true
-  when: datadog_agent_status.failed
   become: true
+  when: datadog_agent_exists.rc != 0
 
 - name: Deploy datadog.yaml configuration file
   template:
