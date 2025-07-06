@@ -36,40 +36,16 @@
     - role: monitoring
       tags: monitoring
 
-- hosts: frontend, reverse_proxy, backend, database
+- name: Install and configure Datadog Agent
+  hosts: frontend, reverse_proxy, backend, database
   become: true
   vars:
     datadog_api_key: "{{ datadog_api_key }}"
     datadog_site: "datadoghq.com"
-  environment:
-    DEBIAN_FRONTEND: noninteractive
-  tasks:
-    - name: Ensure datadog.yaml with API key exists
-      copy:
-        dest: /etc/datadog-agent/datadog.yaml
-        content: |
-          api_key: "{{ datadog_api_key }}"
-          logs_enabled: true
-          apm_config:
-            enabled: true
-      notify: Restart datadog-agent
-      tags: datadog
-
-    - name: Start and enable Datadog Agent
-      systemd:
-        name: datadog-agent
-        state: started
+    datadog_config:
+      logs_enabled: true
+      apm_config:
         enabled: true
-      tags: datadog
-
-    - name: Import the Datadog Agent role from the Datadog collection
-      import_role:
-        name: datadog.dd.agent
-      tags: datadog
-
-  handlers:
-    - name: Restart datadog-agent
-      become: true
-      systemd:
-        name: datadog-agent
-        state: restarted
+  roles:
+    - role: datadog.dd.agent
+  tags: datadog    
