@@ -1,3 +1,0 @@
-logs_enabled: true
-apm_config:
-  enabled: true

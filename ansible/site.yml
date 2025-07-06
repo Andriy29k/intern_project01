@@ -31,10 +31,20 @@
     - node_exporter
 
 - hosts: monitoring
-  become: true
-  roles:
-    - role: prometheus
-      tags: prometheus
+  vars:
+    node_exporter_targets:
+      - 10.0.2.3    # frontend
+      - 10.0.2.4    # backend
+      - 10.0.2.5    # database
+      - 10.0.2.6    # reverse_proxy
+  tasks:
+    - name: Deploy prometheus config with node_exporters
+      template:
+        src: prometheus.yml.j2
+        dest: /etc/prometheus/prometheus.yml
+      notify: Restart Prometheus
+      become: true
+
 
 
 

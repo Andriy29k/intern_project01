@@ -1,3 +1,0 @@
-prometheus_version: "2.52.0"
-datadog_api_key_path: "/etc/datadog-agent/datadog-api-key.txt"
-datadog_api_key: "{{ lookup('file', 'files/datadog-api-key.txt') | trim }}"

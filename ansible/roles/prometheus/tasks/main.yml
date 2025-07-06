@@ -1,51 +1,92 @@
-- name: Check if Prometheus is installed
-  shell: dpkg -s prometheus
-  register: prometheus_installed
-  failed_when: false
-  changed_when: false
+- name: Download Prometheus
+  get_url:
+    url: "https://github.com/prometheus/prometheus/releases/download/v2.44.0/prometheus-2.44.0.linux-amd64.tar.gz"
+    dest: /tmp/prometheus.tar.gz
+    mode: '0644'
   become: true
 
-- name: Install Prometheus if not installed
-  apt:
+- name: Extract Prometheus
+  unarchive:
+    src: /tmp/prometheus.tar.gz
+    dest: /opt/
+    remote_src: yes
+    creates: /opt/prometheus-2.44.0.linux-amd64/prometheus
+  become: true
+
+- name: Symlink prometheus binaries
+  file:
+    src: /opt/prometheus-2.44.0.linux-amd64/{{ item }}
+    dest: /usr/local/bin/{{ item }}
+    state: link
+  loop:
+    - prometheus
+    - promtool
+  become: true
+
+- name: Create prometheus user
+  user:
     name: prometheus
-    state: present
-    update_cache: yes
-  when: prometheus_installed.rc != 0
+    system: yes
+    shell: /usr/sbin/nologin
   become: true
 
-- name: Ensure /etc/prometheus directory exists
+- name: Create config directory
   file:
     path: /etc/prometheus
     state: directory
+    owner: prometheus
+    group: prometheus
     mode: '0755'
   become: true
 
-- name: Deploy prometheus.yml config only if changed
+- name: Deploy prometheus.yml config
   template:
     src: prometheus.yml.j2
     dest: /etc/prometheus/prometheus.yml
+    owner: prometheus
+    group: prometheus
     mode: '0644'
-  register: prometheus_config
-  notify:
-    - Reload Prometheus
   become: true
 
-- name: Deploy prometheus.service systemd unit only if changed
-  template:
-    src: prometheus.service.j2
+- name: Create data directory
+  file:
+    path: /var/lib/prometheus
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: '0755'
+  become: true
+
+- name: Deploy systemd service file
+  copy:
     dest: /etc/systemd/system/prometheus.service
-    mode: '0644'
-  register: prometheus_service
-  notify:
-    - Reload systemd
-    - Restart Prometheus
+    content: |
+      [Unit]
+      Description=Prometheus
+      Wants=network-online.target
+      After=network-online.target
+
+      [Service]
+      User=prometheus
+      Group=prometheus
+      Type=simple
+      ExecStart=/usr/local/bin/prometheus \
+        --config.file=/etc/prometheus/prometheus.yml \
+        --storage.tsdb.path=/var/lib/prometheus/ \
+        --web.listen-address=0.0.0.0:9090
+
+      [Install]
+      WantedBy=multi-user.target
+  mode: '0644'
   become: true
 
-- name: Ensure Prometheus service is enabled and running
+- name: Reload systemd
+  command: systemctl daemon-reload
+  become: true
+
+- name: Enable and start Prometheus
   systemd:
     name: prometheus
     state: started
     enabled: true
   become: true
-
-
