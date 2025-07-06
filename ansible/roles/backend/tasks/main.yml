@@ -48,6 +48,7 @@
     restart_policy: always
     env:
       DB_ENDPOINT_TOKEN: "{{ database_url }}"
+      DB_NAME_TOKEN: "{{ database_name }}"
       DB_USERNAME_TOKEN: "{{ db_username_token }}"
       DB_USERPASSWORD_TOKEN: "{{ db_userpassword_token }}"
       REDIS_URL: "{{ redis_url }}"
