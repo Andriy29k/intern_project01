@@ -39,16 +39,8 @@ pipeline {
             steps {
                 dir('ansible') {
                     sh '''
-                        ansible-playbook -i inventory.ini site.yml --tags node_exporter
+                        ansible-playbook -i inventory.ini site.yml --tags node_exporter,monitoring                      
                     '''
-                }
-                dir('prometheus') {
-                        sh '''
-                            docker stop prometheus
-                            docker rm prometheus
-                            docker images | grep prometheus
-                            docker rmi prom/prometheus
-                        '''
                 }
             }
         }
