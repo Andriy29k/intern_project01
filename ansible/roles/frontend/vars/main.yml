@@ -1,5 +1,5 @@
 docker_image: andriy29k/class_schedule_frontend
 docker_container_name: class_schedule_frontend
-backend_ip: 10.0.2.2
+backend_ip: 35.243.197.140/api
 container_port: 3000
 host_port: 3000
