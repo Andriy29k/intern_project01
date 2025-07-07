@@ -14,7 +14,7 @@ pipeline {
             }
         }
 
-        stage ('Ansible') {
+        stage ('Ansible configuration [frontend, revrse_proxy]') {
             steps {
                 dir('ansible/files') {
                     sh '''
