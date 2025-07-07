@@ -19,7 +19,7 @@
 - hosts: backend
   become: true
   vars:
-    database_ip: 10.0.2.5
+    database_ip: "{{ hostvars['database']['ansible_host'] }}"
     database_name: "class_schedule"
   roles:
     - role: backend
