@@ -14,24 +14,6 @@ pipeline {
             }
         }
 
-        // stage('Ansible') {
-        //     steps {
-        //         dir('ansible/files') {
-        //             sh 'chmod +x generate_inventory_from_config.sh'
-        //             sh './generate_inventory_from_config.sh'
-        //         }
-
-        //         dir('ansible') {
-        //             ansiblePlaybook(
-        //                 playbook: 'site.yml',
-        //                 inventory: 'inventory.ini',
-        //                 colorized: true,
-        //                 extras: '--syntax-check'
-        //             )
-        //         }
-        //     }
-        // }
-
         stage ('Ansible') {
             steps {
                 dir('ansible/files') {

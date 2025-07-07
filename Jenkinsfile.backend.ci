@@ -41,13 +41,13 @@ pipeline {
             }
         }
 
-        // stage('Sonar Scanning') {
-        //     steps {
-        //         withSonarQubeEnv('SonarQube') {
-        //             sh 'sonar-scanner -Dproject.settings=./sonar/backend-sonar.properties'
-        //         }
-        //     }
-        // }
+        stage('Sonar Scanning') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh 'sonar-scanner -Dproject.settings=./sonar/backend-sonar.properties'
+                }
+            }
+        }
 
         stage('Upload Artifacts to GCS') {
             steps {

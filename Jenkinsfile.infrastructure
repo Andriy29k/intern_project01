@@ -49,41 +49,5 @@ pipeline {
                 }
             }   
         } 
-
-        // stage ('Ansible') {
-        //     steps {
-        //         dir('ansible') {
-        //             dir('files') {
-        //                 sh 'bash generate_inventory.sh'
-        //             }
-        //             sh 'ansible all -i inventory.ini -m ping'
-        //         }
-        //     }
-        // }
-
-        
-
-        // stage('Terraform Lint') {
-        //     steps {
-        //         dir('terraform') {
-        //             sh '''
-        //                 curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash -s -- -b $HOME/.local/bin
-        //                 export PATH=$HOME/.local/bin:$PATH
-        //                 tflint --init
-        //                 tflint
-        //            '''
-        //         }
-        //     }
-        // }
-
-        // stage('Frontend Docker build') {
-        //     steps {
-        //         dir('frontend') {
-        //             sh 'docker build -t class_schedule_backend .'
-        //             sh 'docker save class_schedule_backend | gzip > backend-docker-image.tar.gz'
-        //             archiveArtifacts artifacts: 'backend-docker-image.tar.gz', fingerprint: true
-        //         }
-        //     }
-        // }
     }
 }
