@@ -1,2 +1,2 @@
-frontend_private_ip: 10.0.2.4
-backend_private_ip: 10.0.2.2
+frontend_private_ip: "{{ hostvars['frontend']['ansible_host'] }}"
+backend_private_ip: "{{ hostvars['backend']['ansible_host'] }}"
